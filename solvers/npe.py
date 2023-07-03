@@ -11,17 +11,17 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
-    name = "Neural posterior estimation"
-    stopping_strategy = 'callback'
+    name = "NPE"
+    stopping_strategy = "callback"
     parameters = {
-        'flow': ['MAF', 'NSF'],
-        'transforms': [1, 3, 5],
+        "flow": ["MAF", "NSF"],
+        "transforms": [1, 3, 5],
     }
 
     def set_objective(self, theta: Tensor, x: Tensor):
         self.theta, self.x = theta, x
 
-        build = zuko.flows.MAF if self.flow == 'MAF' else zuko.flows.NSF
+        build = zuko.flows.MAF if self.flow == "MAF" else zuko.flows.NSF
 
         self.npe = lampe.inference.NPE(
             theta.shape[-1],
