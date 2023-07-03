@@ -3,7 +3,6 @@ from typing import *
 
 with safe_import_context() as import_ctx:
     import lampe
-    import numpy as np
     import torch
     import zuko
 
@@ -50,4 +49,7 @@ class Solver(BaseSolver):
                 self.optimizer.step()
 
     def get_result(self):
-        return lambda theta, x: self.npe.flow(x).log_prob(theta)
+        return (
+            lambda theta, x: self.npe.flow(x).log_prob(theta),
+            lambda x, n: self.npe.flow(x).sample((n,)),
+        )

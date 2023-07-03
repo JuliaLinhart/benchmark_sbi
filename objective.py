@@ -36,14 +36,19 @@ class Objective(BaseObjective):
 
     def compute(
         self,
-        log_prob: Callable[[Tensor, Tensor], Tensor],
+        result: Tuple[
+            Callable[[Tensor, Tensor], Tensor],
+            Callable[[Tensor, int], Tensor],
+        ],
     ):
+        log_prob, sample = result
+
         nll = negative_log_likelihood(log_prob, self.theta_test, self.x_test)
 
         return dict(value=nll)
 
-    def get_one_solution(self): # TODO: ask if we can output dict (or several outputs)
-        return lambda theta, x: 0.0
+    # def get_one_solution(self):
+    #     pass
 
     def get_objective(self):
         return dict(theta=self.theta_train, x=self.x_train, prior=self.prior)
