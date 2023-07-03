@@ -7,6 +7,7 @@ with safe_import_context() as import_ctx:
 
     from numpy.typing import ArrayLike
     from torch import Tensor
+    from torch.distributions import Distribution
 
 
 def negative_log_likelihood(
@@ -24,7 +25,7 @@ class Objective(BaseObjective):
     }
     min_benchopt_version = "1.3"
 
-    def set_data(self, theta: ArrayLike, x: ArrayLike):
+    def set_data(self, theta: ArrayLike, x: ArrayLike, prior: Distribution):
         theta = torch.tensor(theta, dtype=torch.float32)
         x = torch.tensor(x, dtype=torch.float32)
 
@@ -34,6 +35,7 @@ class Objective(BaseObjective):
 
         self.theta_train, self.theta_test = torch.split(theta, (train_size, test_size))
         self.x_train, self.x_test = torch.split(x, (train_size, test_size))
+        self.prior = prior
 
     def compute(
         self,
@@ -47,4 +49,4 @@ class Objective(BaseObjective):
         return lambda theta, x: 0.0
 
     def get_objective(self):
-        return dict(theta=self.theta_train, x=self.x_train)
+        return dict(theta=self.theta_train, x=self.x_train, prior=self.prior)

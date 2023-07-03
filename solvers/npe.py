@@ -8,6 +8,7 @@ with safe_import_context() as import_ctx:
     import zuko
 
     from torch import Tensor
+    from torch.distributions import Distribution
 
 
 class Solver(BaseSolver):
@@ -18,7 +19,7 @@ class Solver(BaseSolver):
         "transforms": [1, 3, 5],
     }
 
-    def set_objective(self, theta: Tensor, x: Tensor):
+    def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
         self.theta, self.x = theta, x
 
         build = zuko.flows.MAF if self.flow == "MAF" else zuko.flows.NSF

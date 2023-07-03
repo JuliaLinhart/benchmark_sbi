@@ -1,7 +1,10 @@
-# `benchmark_utils` is a module in which you can define code to reuse in
-# the benchmark objective, datasets, and solvers. The folder should have the
-# name `benchmark_utils`, and code defined inside will be importable using
-# the usual import syntax
+import torch
+from contextlib import contextmanager
 
-def gradient_ols(X, y, w):
-    return X.T @ (X @ w - y)
+@contextmanager
+def fork():
+    try:
+        state = torch.random.get_rng_state()
+        yield
+    finally:
+        torch.set_rng_state(state)
