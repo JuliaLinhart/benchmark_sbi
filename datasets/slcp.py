@@ -25,4 +25,4 @@ class Dataset(BaseDataset):
             theta = prior(num_samples=self.size)
             x = simulator(theta)
 
-        return dict(theta=theta, x=x, prior=prior)
+        return dict(theta=theta, x=x, prior=task.prior_dist)
