@@ -1,0 +1,15 @@
+name: benchsbi
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - cpuonly=2.0
+  - ipython=8.12.0
+  - numpy=1.25.0
+  - pip=23.1.2
+  - python=3.9.16
+  - pytorch=1.13.1
+  - pip:
+      - benchopt==1.3.1
+      - lampe==0.8.0
+      - zuko==0.2.1
