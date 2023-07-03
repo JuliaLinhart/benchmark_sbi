@@ -2,10 +2,7 @@ from benchopt import BaseObjective, safe_import_context
 from typing import *
 
 with safe_import_context() as import_ctx:
-    import numpy as np
     import torch
-
-    from numpy.typing import ArrayLike
     from torch import Tensor
     from torch.distributions import Distribution
 
@@ -25,7 +22,7 @@ class Objective(BaseObjective):
     }
     min_benchopt_version = "1.3"
 
-    def set_data(self, theta: ArrayLike, x: ArrayLike, prior: Distribution):
+    def set_data(self, theta: Tensor, x: Tensor, prior: Distribution):
         theta = torch.tensor(theta, dtype=torch.float32)
         x = torch.tensor(x, dtype=torch.float32)
 
