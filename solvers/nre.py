@@ -4,19 +4,17 @@ from typing import *
 with safe_import_context() as import_ctx:
     import lampe
     import torch
-    import zuko
 
     from lampe.inference import MetropolisHastings
     from torch import Tensor
     from torch.distributions import Distribution
 
 
-
 class Solver(BaseSolver):
-    name = "Neural ratio estimation"
-    stopping_strategy = 'callback'
+    name = "NRE"
+    stopping_strategy = "callback"
     parameters = {
-        'layers': [3, 5],
+        "layers": [3, 5],
     }
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
@@ -49,16 +47,15 @@ class Solver(BaseSolver):
     def get_result(self):
         return (
             lambda theta, x: self.nre(theta, x) + self.prior.log_prob(theta),
-            lambda x, n: self.sample(x, n)
+            lambda x, n: self.sample(x, n),
         )
-        
+
     def sample(self, x: Tensor, n: int) -> Tensor:
-        
-        theta_0 = self.prior.sample((n, )) #Initializing n chains
-        
-        log_p = lambda theta: self.nre(theta, x) + self.prior.log_prob(theta) 
-        
+        theta_0 = self.prior.sample((n,))  # Initializing n chains
+
+        log_p = lambda theta: self.nre(theta, x) + self.prior.log_prob(theta)
+
         sampler = MetropolisHastings(theta_0, log_f=log_p)
-        samples = torch.cat(list(sampler(1024 + n, burn=1024))) #TODO mettre en params 
-        
+        samples = torch.cat(list(sampler(1024 + n, burn=1024)))  # TODO mettre en params
+
         return samples

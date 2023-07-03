@@ -25,4 +25,17 @@ class Dataset(BaseDataset):
             theta = prior(num_samples=self.size)
             x = simulator(theta)
 
-        return dict(theta=theta, x=x, prior=task.prior_dist)
+            sample_reference = (
+                lambda x, n, x_id: task._sample_reference_posterior(
+                    num_samples=n, observation=x, num_observation=x_id
+                )
+            )
+
+        return dict(
+            theta=theta,
+            x=x,
+            prior=task.prior_dist,
+            sample_reference=sample_reference,
+        )
+
+        
