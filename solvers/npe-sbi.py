@@ -5,7 +5,7 @@ with safe_import_context() as import_ctx:
     from torch import Tensor
     from torch.distributions import Distribution
 
-    from benchmark_utils import dump
+    from benchmark_utils.common import dump
 
 
 class Solver(BaseSolver):

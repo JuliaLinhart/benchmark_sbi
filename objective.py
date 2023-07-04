@@ -8,7 +8,7 @@ with safe_import_context() as import_ctx:
     from torch import Tensor
     from torch.distributions import Distribution
     import sbibm.metrics as metrics
-    from benchmark_utils import dump
+    from benchmark_utils.common import dump
 
     from tqdm import trange
 

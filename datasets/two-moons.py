@@ -3,7 +3,7 @@ from typing import Dict
 
 with safe_import_context() as import_ctx:
     import torch
-    from benchmark_utils import fork, data_generator_sbibm
+    from benchmark_utils.common import fork, data_generator_sbibm
 
 
 class Dataset(BaseDataset):
