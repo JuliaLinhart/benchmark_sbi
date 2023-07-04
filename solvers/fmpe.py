@@ -1,7 +1,6 @@
 from typing import Callable
 
 from benchopt import BaseSolver, safe_import_context
-from benchopt.utils.sys_info import get_cuda_version
 
 
 with safe_import_context() as import_ctx:
@@ -12,19 +11,12 @@ with safe_import_context() as import_ctx:
     from torch.distributions import Distribution
 
 
-cuda_version = get_cuda_version()
-if cuda_version is not None:
-    cuda_version = cuda_version.split("cuda_", 1)[1][:4]
-
-
 class Solver(BaseSolver):
     name = "FMPE"
 
     install_cmd = "conda"
     requirements = [
         "pip:lampe",
-        "pytorch",
-        "pytorch-cuda" if cuda_version is not None else "cpuonly"
     ]
 
     stopping_strategy = "callback"

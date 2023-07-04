@@ -1,5 +1,6 @@
 from benchopt import BaseSolver, safe_import_context
-from typing import *
+from typing import Callable
+
 
 with safe_import_context() as import_ctx:
     import lampe
@@ -17,6 +18,12 @@ class Solver(BaseSolver):
         "flow": ["MAF", "NSF"],
         "transforms": [1, 3, 5],
     }
+
+    install_cmd = "conda"
+    requirements = [
+        "pip:lampe",
+        "pip:zuko",
+    ]
 
     def get_next(self, n_iter: int) -> int:
         return max(n_iter + 10, n_iter * 1.5)

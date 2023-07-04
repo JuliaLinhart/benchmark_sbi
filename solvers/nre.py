@@ -17,6 +17,10 @@ class Solver(BaseSolver):
         "layers": [3, 5],
     }
 
+    requirements = [
+        "pip:lampe",
+    ]
+
     def get_next(self, n_iter: int) -> int:
         return max(n_iter + 10, n_iter * 1.5)
 
