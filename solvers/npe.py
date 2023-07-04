@@ -26,7 +26,7 @@ class Solver(BaseSolver):
     ]
 
     def get_next(self, n_iter: int) -> int:
-        return max(n_iter + 10, n_iter * 1.5)
+        return int(max(n_iter + 10, n_iter * 1.5))
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
         self.theta, self.x = theta, x
