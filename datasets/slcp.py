@@ -9,7 +9,10 @@ with safe_import_context() as import_ctx:
 class Dataset(BaseDataset):
     name = "slcp"
     parameters = {
-        "size": [1024, 4096],
+        "train_size": [1024, 4096],
+        "test_size": [256],
+        "ref_size": [0],
+        "n_per_ref": [1024],
         "seed": [42],
     }
 
@@ -17,4 +20,10 @@ class Dataset(BaseDataset):
         with fork():
             torch.manual_seed(self.seed)
 
-            return data_generator_sbibm(self.size, self.name, reference=False)
+            return data_generator_sbibm(
+                self.name,
+                self.train_size,
+                self.test_size,
+                self.ref_size,
+                self.n_per_ref,
+            )

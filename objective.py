@@ -1,49 +1,21 @@
 from benchopt import BaseObjective, safe_import_context
-from typing import Callable, Tuple
+from typing import Callable, List, Tuple
 
 
 with safe_import_context() as import_ctx:
     import numpy as np
     import torch
+
     from torch import Tensor
     from torch.distributions import Distribution
-    import sbibm.metrics as metrics
-    from benchmark_utils.common import dump
-
-    from tqdm import trange
-
-
-def negative_log_lik(
-    log_prob: Callable[[Tensor, Tensor], Tensor],
-    theta: Tensor,
-    x: Tensor,
-) -> float:
-    return -log_prob(theta, x).mean().item()
-
-
-def c2st(
-    sample: Callable[[Tensor, int], Tensor],
-    sample_reference: Callable[[Tensor, int], Tensor],
-    x: Tensor,
-    num_observations: int,
-    n_samples: int = 1000,  # default from sbibm is 20000
-) -> float:
-    c2st_scores = []
-    print()
-    for i in trange(num_observations, desc="C2ST"):
-        with dump():
-            P = sample_reference(x[i][None, :], n_samples)
-        Q = sample(x[i], n_samples)
-        c2st_scores.append(metrics.c2st(X=P, Y=Q, z_score=True, n_folds=5))
-    return np.mean(c2st_scores), np.std(c2st_scores)
+    from benchmark_utils.common import negative_log_lik, c2st
 
 
 class Objective(BaseObjective):
-    name = "Negative log-likelihood"
-    parameters = {
-        "split": [0.8],
-        "num_observations": [10],
-    }
+    """TODO"""
+
+    name = "sbi"
+    parameters = {}
     min_benchopt_version = "1.3"
 
     install_cmd = "conda"
@@ -57,21 +29,21 @@ class Objective(BaseObjective):
 
     def set_data(
         self,
-        theta: Tensor,
-        x: Tensor,
         prior: Distribution,
-        sample_reference: Callable[[Tensor, int], Tensor],
+        theta_train: Tensor,
+        x_train: Tensor,
+        theta_test: Tensor,
+        x_test: Tensor,
+        theta_ref: List[Tensor] = None,
+        x_ref: Tensor = None,
     ):
-        size = len(theta)
-        train_size = int(self.split * size)
-        test_size = size - train_size
-
-        self.theta_train, self.theta_test = torch.split(
-            theta, (train_size, test_size)
-        )
-        self.x_train, self.x_test = torch.split(x, (train_size, test_size))
         self.prior = prior
-        self.sample_reference = sample_reference
+        self.theta_train = theta_train
+        self.x_train = x_train
+        self.theta_test = theta_test
+        self.x_test = x_test
+        self.theta_ref = theta_ref
+        self.x_ref = x_ref
 
     def compute(
         self,
@@ -84,17 +56,22 @@ class Objective(BaseObjective):
 
         nll_test = negative_log_lik(log_prob, self.theta_test, self.x_test)
         nll_train = negative_log_lik(log_prob, self.theta_train, self.x_train)
-        if self.sample_reference is None:
+
+        if self.theta_ref is None:
             c2st_mean, c2st_std = None, None
         else:
-            c2st_mean, c2st_std = c2st(
-                sample, self.sample_reference, self.x_test,
-                self.num_observations
-            )
+            theta_est = [
+                sample(x, self.theta_ref[i].shape[0])
+                for i, x in enumerate(self.x_ref)
+            ]
+
+            c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
 
         return dict(
-            value=nll_test, nll_train=nll_train, c2st_mean=c2st_mean,
-            c2st_std=c2st_std
+            value=nll_test,
+            nll_train=nll_train,
+            c2st_mean=c2st_mean,
+            c2st_std=c2st_std,
         )
 
     def get_objective(self):
