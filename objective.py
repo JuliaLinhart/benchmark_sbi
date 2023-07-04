@@ -9,6 +9,8 @@ with safe_import_context() as import_ctx:
     import sbibm.metrics as metrics
     from benchmark_utils import dump
 
+    from tqdm import trange
+
 
 def negative_log_likelihood(
     log_prob: Callable[[Tensor, Tensor], Tensor],
@@ -26,8 +28,8 @@ def c2st(
     n_samples: int = 1000,  # default from sbibm is 20000
 ) -> float:
     c2st_scores = []
-    for i in range(num_observations):
-        print(f"observation {i + 1}/{num_observations}")
+    print()
+    for i in trange(num_observations, desc="C2ST"):
         with dump():
             P = sample_reference(x[i][None, :], n_samples)
         Q = sample(x[i], n_samples)
