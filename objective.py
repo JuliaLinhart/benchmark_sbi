@@ -23,22 +23,23 @@ def c2st(
     sample_reference: Callable[[Tensor, int], Tensor],
     x: Tensor,
     num_observations: int,
-    n_samples: int = 20000,  # default from sbibm
+    n_samples: int = 1000,  # default from sbibm
 ) -> float:
     c2st_scores = []
-    with dump():
-        for i in range(num_observations):
+    for i in range(num_observations):
+        print(f"observation {i + 1}/{num_observations}")
+        with dump():
             P = sample_reference(x[i][None, :], n_samples)
-            Q = sample(x[i][None, :], n_samples)
-            c2st_scores.append(metrics.c2st(X=P, Y=Q, z_score=True, n_folds=5))
-        return np.mean(c2st_scores), np.std(c2st_scores)
+        Q = sample(x[i], n_samples)
+        c2st_scores.append(metrics.c2st(X=P, Y=Q, z_score=True, n_folds=5))
+    return np.mean(c2st_scores), np.std(c2st_scores)
 
 
 class Objective(BaseObjective):
     name = "Negative log-likelihood"
     parameters = {
         "split": [0.8],
-        "num_observations": [10],
+        "num_observations": [3],
     }
     min_benchopt_version = "1.3"
 
