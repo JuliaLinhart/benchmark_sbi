@@ -1,5 +1,4 @@
 from benchopt import BaseSolver, safe_import_context
-from typing import *
 
 with safe_import_context() as import_ctx:
     from sbi.inference import SNPE

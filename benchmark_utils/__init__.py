@@ -1,6 +1,6 @@
 from contextlib import contextmanager, redirect_stdout, redirect_stderr
 from io import StringIO
-from typing import *
+from typing import Dict
 
 import torch
 import sbibm
@@ -25,7 +25,9 @@ def dump():
                 pass
 
 
-def data_generator_sbibm(n: int, task_name: str, reference: bool = False) -> Dict:
+def data_generator_sbibm(
+        n: int, task_name: str, reference: bool = False
+        ) -> Dict:
     task = sbibm.get_task(task_name)
     prior = task.get_prior()
     simulator = task.get_simulator()
@@ -34,9 +36,10 @@ def data_generator_sbibm(n: int, task_name: str, reference: bool = False) -> Dic
     x = simulator(theta)
 
     if reference:
-        sample_reference = lambda x, n: task._sample_reference_posterior(
-            num_samples=n, observation=x, num_observation=1
-        )
+        def sample_reference(x, n):
+            return task._sample_reference_posterior(
+                num_samples=n, observation=x, num_observation=1
+            )
     else:
         sample_reference = None
 

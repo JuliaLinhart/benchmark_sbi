@@ -1,5 +1,5 @@
 from benchopt import BaseDataset, safe_import_context
-from typing import *
+from typing import Dict
 
 with safe_import_context() as import_ctx:
     import torch

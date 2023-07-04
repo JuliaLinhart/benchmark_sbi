@@ -1,5 +1,6 @@
 from benchopt import BaseObjective, safe_import_context
-from typing import *
+from typing import Callable, Tuple
+
 
 with safe_import_context() as import_ctx:
     import numpy as np
@@ -12,7 +13,7 @@ with safe_import_context() as import_ctx:
     from tqdm import trange
 
 
-def negative_log_likelihood(
+def negative_log_lik(
     log_prob: Callable[[Tensor, Tensor], Tensor],
     theta: Tensor,
     x: Tensor,
@@ -45,6 +46,14 @@ class Objective(BaseObjective):
     }
     min_benchopt_version = "1.3"
 
+    install_cmd = "conda"
+    requirements = [
+        "scikit-learn",
+        "pyro-ppl",
+        "pip:sbibm",
+        "pip:future",
+    ]
+
     def set_data(
         self,
         theta: Tensor,
@@ -56,7 +65,9 @@ class Objective(BaseObjective):
         train_size = int(self.split * size)
         test_size = size - train_size
 
-        self.theta_train, self.theta_test = torch.split(theta, (train_size, test_size))
+        self.theta_train, self.theta_test = torch.split(
+            theta, (train_size, test_size)
+        )
         self.x_train, self.x_test = torch.split(x, (train_size, test_size))
         self.prior = prior
         self.sample_reference = sample_reference
@@ -70,21 +81,20 @@ class Objective(BaseObjective):
     ):
         log_prob, sample = result
 
-        nll_test = negative_log_likelihood(log_prob, self.theta_test, self.x_test)
-        nll_train = negative_log_likelihood(log_prob, self.theta_train, self.x_train)
+        nll_test = negative_log_lik(log_prob, self.theta_test, self.x_test)
+        nll_train = negative_log_lik(log_prob, self.theta_train, self.x_train)
         if self.sample_reference is None:
             c2st_mean, c2st_std = None, None
         else:
             c2st_mean, c2st_std = c2st(
-                sample, self.sample_reference, self.x_test, self.num_observations
+                sample, self.sample_reference, self.x_test,
+                self.num_observations
             )
 
         return dict(
-            value=nll_test, nll_train=nll_train, c2st_mean=c2st_mean, c2st_std=c2st_std
+            value=nll_test, nll_train=nll_train, c2st_mean=c2st_mean,
+            c2st_std=c2st_std
         )
-
-    # def get_one_solution(self):
-    #     pass
 
     def get_objective(self):
         return dict(theta=self.theta_train, x=self.x_train, prior=self.prior)

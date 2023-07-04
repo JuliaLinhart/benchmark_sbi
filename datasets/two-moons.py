@@ -1,5 +1,5 @@
 from benchopt import BaseDataset, safe_import_context
-from typing import *
+from typing import Dict
 
 with safe_import_context() as import_ctx:
     import torch
@@ -18,5 +18,3 @@ class Dataset(BaseDataset):
             torch.manual_seed(self.seed)
 
             return data_generator_sbibm(self.size, self.name, reference=True)
-
-        

@@ -1,5 +1,5 @@
 from benchopt import BaseSolver, safe_import_context
-from typing import *
+from typing import Callable
 
 with safe_import_context() as import_ctx:
     import lampe
@@ -56,7 +56,8 @@ class Solver(BaseSolver):
     def sample(self, x: Tensor, n: int) -> Tensor:
         theta_0 = self.prior.sample((n,))
 
-        log_p = lambda theta: self.nre(theta, x) + self.prior.log_prob(theta)
+        def log_p(theta):
+            return self.nre(theta, x) + self.prior.log_prob(theta)
 
         sampler = MetropolisHastings(theta_0, log_f=log_p)
         samples = next(sampler(1024 + 1, burn=1024))  # TODO mettre en params
