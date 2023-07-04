@@ -2,6 +2,7 @@ from benchopt import BaseSolver, safe_import_context
 
 with safe_import_context() as import_ctx:
     from sbi.inference import SNPE
+    from sbi.utils.get_nn_models import posterior_nn
     from torch import Tensor
     from torch.distributions import Distribution
 
@@ -10,20 +11,29 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "NPE-SBI"
-    # stopping_strategy = "callback"
     parameters = {
-        # "transforms": [1, 3, 5],
+        "flow": ["maf", "nsf"],
+        "transforms": [1, 3, 5],
     }
+
+    def get_next(self, n_iter: int) -> int:
+        return max(n_iter + 10, n_iter * 1.5)
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
         self.theta, self.x, self.prior = theta, x, prior
 
     def run(self, n_iter: int):
-        npe = SNPE(self.prior)
+        estimator = posterior_nn(
+            self.flow,
+            num_transforms=self.transforms,
+            use_random_permutations=False,
+        )
+
+        npe = SNPE(self.prior, density_estimator=estimator)
         npe.append_simulations(self.theta, self.x)
 
         with dump():
-            self.flow = npe.train(
+            self.npe = npe.train(
                 validation_fraction=0.1,
                 max_num_epochs=n_iter + 1,
                 training_batch_size=128,
@@ -32,6 +42,6 @@ class Solver(BaseSolver):
 
     def get_result(self):
         return (
-            lambda theta, x: self.flow.log_prob(theta, x),
-            lambda x, n: self.flow.sample(n, x),
+            lambda theta, x: self.npe.log_prob(theta, x),
+            lambda x, n: self.npe.sample(n, x[None]).squeeze(0).detach(),
         )
