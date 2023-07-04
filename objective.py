@@ -48,6 +48,7 @@ class Objective(BaseObjective):
 
     install_cmd = "conda"
     requirements = [
+        "torch",
         "scikit-learn",
         "pyro-ppl",
         "pip:sbibm",
