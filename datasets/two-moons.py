@@ -3,12 +3,11 @@ from typing import *
 
 with safe_import_context() as import_ctx:
     import torch
-    import sbibm
-    from benchmark_utils import fork
+    from benchmark_utils import fork, data_generator_sbibm
 
 
 class Dataset(BaseDataset):
-    name = "Two-Moons"
+    name = "two_moons"
     parameters = {
         "size": [1024, 4096],
         "seed": [42],
@@ -18,24 +17,6 @@ class Dataset(BaseDataset):
         with fork():
             torch.manual_seed(self.seed)
 
-            task = sbibm.get_task("two_moons")
-            prior = task.get_prior()
-            simulator = task.get_simulator()
-
-            theta = prior(num_samples=self.size)
-            x = simulator(theta)
-
-            sample_reference = (
-                lambda x, n, x_id: task._sample_reference_posterior(
-                    num_samples=n, observation=x, num_observation=x_id
-                )
-            )
-
-        return dict(
-            theta=theta,
-            x=x,
-            prior=task.prior_dist,
-            sample_reference=sample_reference,
-        )
+            return data_generator_sbibm(self.size, self.name, reference=True)
 
         
