@@ -51,11 +51,11 @@ class Solver(BaseSolver):
         )
 
     def sample(self, x: Tensor, n: int) -> Tensor:
-        theta_0 = self.prior.sample((n,))  # Initializing n chains
+        theta_0 = self.prior.sample((n,))
 
         log_p = lambda theta: self.nre(theta, x) + self.prior.log_prob(theta)
 
         sampler = MetropolisHastings(theta_0, log_f=log_p)
-        samples = torch.cat(list(sampler(1024 + n, burn=1024)))  # TODO mettre en params
+        samples = next(sampler(1024 + 1, burn=1024))  # TODO mettre en params
 
         return samples
