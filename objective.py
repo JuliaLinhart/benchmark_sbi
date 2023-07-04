@@ -28,7 +28,7 @@ def c2st(
         P = sample_reference(x[x_id][None, :], n_samples, x_id)
         Q = sample(x[x_id][None, :], n_samples)
 
-        c2st_scores.append(metrics.c2st(X=P, Y=Q, z_score=True))
+        c2st_scores.append(metrics.c2st(X=P, Y=Q, z_score=True, n_folds=5))
         print(f"C2ST for x_id={x_id}: {c2st_scores[-1].item()}")
     return np.mean(c2st_scores), np.std(c2st_scores)
 
@@ -65,11 +65,14 @@ class Objective(BaseObjective):
     ):
         log_prob, sample = result
 
-        nll = negative_log_likelihood(log_prob, self.theta_test, self.x_test)
+        nll_test = negative_log_likelihood(log_prob, self.theta_test, self.x_test)
+        nll_train = negative_log_likelihood(log_prob, self.theta_train, self.x_train)
 
         c2st_mean, c2st_std = c2st(sample, self.sample_reference, self.x_test)
 
-        return dict(value=nll, c2st_mean=c2st_mean, c2st_std=c2st_std)
+        return dict(
+            value=nll_test, nll_train=nll_train, c2st_mean=c2st_mean, c2st_std=c2st_std
+        )
 
     # def get_one_solution(self):
     #     pass
