@@ -6,13 +6,15 @@ My Benchopt Benchmark
 Benchopt is a package to simplify and make more transparent and
 reproducible the comparisons of optimization algorithms. This benchmark is dedicated to simulation-based inference (SBI) algorithms. The goal of SBI is to approximate the posterior distribution of a stochastic model.
 
-Formally, a stochastic model takes (a vector of) parameters :math:`\theta \in \Theta` as input, samples internally a series :math:`z \in \mathcal{Z}` of latent variables and, finally, produces an observation :math:`x \in \mathcal{X} \sim p(x | \theta, z)` as output, thereby defining an implicit likelihood :math:`p(x | \theta)`. This likelihood is typically *intractable* as it corresponds to the integral of the joint likelihood :math:`p(x, z | \theta)` over *all* possible trajectories through the latent space :math:`\mathcal{Z}`. Moreover, in Bayesian inference, we are interested in the posterior distribution
+Formally, a stochastic model takes (a vector of) parameters $\theta \in \Theta$ as input, samples internally a series $z \in \mathcal{Z}$ of latent variables and, finally, produces an observation $x \in \mathcal{X} \sim p(x | \theta, z)$ as output, thereby defining an implicit likelihood $p(x | \theta)$. This likelihood is typically intractable as it corresponds to the integral of the joint likelihood $p(x, z | \theta)$ over all possible trajectories through the latent space $\mathcal{Z}$. Moreover, in Bayesian inference, we are interested in the posterior distribution
 
-.. math:: p(\theta | x)
-    = \frac{p(x | \theta) p(\theta)}{p(x)}
-    = \frac{p(x | \theta) p(\theta)}{\int_\Theta p(x | \theta') p(\theta') \operatorname{d}\!\theta'}
+$$
+   p(\theta | x)
+   = \frac{p(x | \theta) p(\theta)}{p(x)}
+   = \frac{p(x | \theta) p(\theta)}{\int_\Theta p(x | \theta') p(\theta') \operatorname{d}\!\theta'}
+$$
 
-for some observation :math:`x` and a prior distribution :math:`p(\theta)`, which not only involves the intractable likelihood :math:`p(x | \theta)` but also an intractable integral over the parameter space :math:`\Theta`.
+for some observation $x$ and a prior distribution $p(\theta)$, which not only involves the intractable likelihood $p(x | \theta)$ but also an intractable integral over the parameter space $\Theta$.
 
 Install
 --------
