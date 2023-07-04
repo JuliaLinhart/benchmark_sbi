@@ -20,10 +20,10 @@ def negative_log_likelihood(
 
 def c2st(
     sample: Callable[[Tensor, int], Tensor],
-    sample_reference: Callable[[Tensor, int, int], Tensor],
+    sample_reference: Callable[[Tensor, int], Tensor],
     x: Tensor,
-    n_samples: int = 1000,
-    num_observations: int = 3,
+    num_observations: int,
+    n_samples: int = 20000,  # default from sbibm
 ) -> float:
     c2st_scores = []
     with dump():
@@ -38,6 +38,7 @@ class Objective(BaseObjective):
     name = "Negative log-likelihood"
     parameters = {
         "split": [0.8],
+        "num_observations": [10],
     }
     min_benchopt_version = "1.3"
 
@@ -46,7 +47,7 @@ class Objective(BaseObjective):
         theta: Tensor,
         x: Tensor,
         prior: Distribution,
-        sample_reference: Callable[[Tensor, int, int], Tensor],
+        sample_reference: Callable[[Tensor, int], Tensor],
     ):
         size = len(theta)
         train_size = int(self.split * size)
@@ -71,7 +72,9 @@ class Objective(BaseObjective):
         if self.sample_reference is None:
             c2st_mean, c2st_std = None, None
         else:
-            c2st_mean, c2st_std = c2st(sample, self.sample_reference, self.x_test)
+            c2st_mean, c2st_std = c2st(
+                sample, self.sample_reference, self.x_test, self.num_observations
+            )
 
         return dict(
             value=nll_test, nll_train=nll_train, c2st_mean=c2st_mean, c2st_std=c2st_std
