@@ -23,7 +23,7 @@ def c2st(
     sample_reference: Callable[[Tensor, int], Tensor],
     x: Tensor,
     num_observations: int,
-    n_samples: int = 1000,  # default from sbibm
+    n_samples: int = 1000,  # default from sbibm is 20000
 ) -> float:
     c2st_scores = []
     for i in range(num_observations):
@@ -39,7 +39,7 @@ class Objective(BaseObjective):
     name = "Negative log-likelihood"
     parameters = {
         "split": [0.8],
-        "num_observations": [3],
+        "num_observations": [10],
     }
     min_benchopt_version = "1.3"
 
