@@ -102,7 +102,9 @@ def c2st(
 
     c2st_scores = [
         metrics.c2st(X=P, Y=Q, z_score=True, n_folds=5).item()
-        for P, Q in tqdm(zip(theta_ref, theta_est), desc="C2ST")
+        for P, Q in tqdm(
+            zip(theta_ref, theta_est), desc="C2ST"
+        )  # TODO: hide progress bar between runs (or n_iter)
     ]
 
     return np.mean(c2st_scores), np.std(c2st_scores)
