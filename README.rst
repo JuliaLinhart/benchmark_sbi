@@ -9,11 +9,7 @@ reproducible the comparisons of optimization algorithms. This benchmark is dedic
 $$q(\\theta | x) \\approx p(\\theta | x) = \\frac{p(x | \\theta) p(\\theta)}{p(x)} = \\frac{p(x | \\theta) p(\\theta)}{\\int_\\Theta p(x | \\theta') p(\\theta') d\\theta'}$$
 
 where $\\theta$ denotes the model-parameters and $x$ is an observation. In SBI the likelihood $p(x | \\theta)$ is implicitly modeled by the stochastic simulator. 
-By placing a prior $p(\\theta)$ over the simulator-parameters, SBI-algorithms use samples from the joint distribution $p(\\theta, x) = p(\\theta)p(x | \\theta)$ to approximate the posterior distribution
-
-$$p(\\theta | x) = \\frac{p(x | \\theta) p(\\theta)}{p(x)} = \\frac{p(x | \\theta) p(\\theta)}{\\int_\\Theta p(x | \\theta') p(\\theta') d\\theta'}$$
-
-which not only involves the typically intractable likelihood $p(x | \\theta)$ (black box simulator), but also an intractable integral over the parameter space.
+By placing a prior $p(\\theta)$ over the simulator-parameters, SBI-algorithms use samples from the joint distribution $p(\\theta, x) = p(\\theta)p(x | \\theta)$ to approximate the posterior distribution.
 
 In this benchmark we consider only amortized SBI-algorithms, i.e. that allow for a quick inference procedure for any new observation $x$ after a one-time training phase.
 
