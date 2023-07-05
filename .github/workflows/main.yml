@@ -24,4 +24,4 @@ jobs:
     with:
       benchopt_version: latest
   lint:
-    uses: benchopt/template_benchmark/.github/workflows/lint_benchmarks.yml@main
+    uses: lint_benchmarks.yml
