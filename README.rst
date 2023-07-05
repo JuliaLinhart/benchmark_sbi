@@ -8,7 +8,7 @@ reproducible the comparisons of optimization algorithms. This benchmark is dedic
 
 $$q(\\theta | x) \\approx p(\\theta | x) \\propto p(\\theta)p(x | \\theta)$$
 
-where $\\theta$ is a set of parameters and $x$ is an observation. 
+where $\\theta$ denotes the model-parameters and $x$ is an observation. 
 
 In SBI the likelihood $p(x | \\theta)$ is implicitly modeled by the stochastic simulator:  
 it takes a set of parameters $\\theta \\in \\Theta$ as input, samples internally a series $z \\in \\mathcal{Z}$ of latent variables and, finally, produces an observation $x \\in \\mathcal{X} \\sim p(x | \\theta)$ as output. 
