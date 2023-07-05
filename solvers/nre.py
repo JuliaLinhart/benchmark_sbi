@@ -8,6 +8,20 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
+    """Neural Ratio Estimator.
+
+    Solver implemented using the LAMPE package.
+
+    Trains a classifier to discriminate between pairs sampled from the joint distribution and the product of marginals.
+
+    References:
+        | Approximating Likelihood Ratios with Calibrated Discriminative Classifiers (Cranmer et al., 2015)
+        | https://arxiv.org/abs/1506.02169
+
+        | Likelihood-free MCMC with Amortized Approximate Ratio Estimators (Hermans et al., 2019)
+        | https://arxiv.org/abs/1903.04057
+    """
+
     name = "NRE"
     stopping_strategy = "callback"
     parameters = {

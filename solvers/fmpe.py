@@ -9,6 +9,8 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     r"""Flow Matching Posterior Estimator.
+
+    Solver implemented using the LAMPE package.
     Trains a regression network to approximate a vector field inducing a time-continuous normalizing flow between
     the posterior distribution and a standard Gaussian distribution.
 

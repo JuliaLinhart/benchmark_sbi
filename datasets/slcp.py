@@ -8,6 +8,13 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
+    """Simple Likelihood Complex Posterior.
+
+    Generated using sbibm.
+
+    The observations are 8 dimensional, the parameters are 5 dimensional.
+    """
+
     name = "slcp"
     parameters = {
         "train_size": [1024, 4096],

@@ -8,6 +8,11 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
+    """Two dimensional dataset which exhibits multimodality.
+
+    Generated using sbibm.
+    """
+
     name = "two_moons"
     parameters = {
         "train_size": [1024, 4096],
