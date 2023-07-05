@@ -3,6 +3,7 @@ r""""""
 import numpy as np
 import sbibm
 import sbibm.metrics as metrics
+import ot
 import torch
 
 from contextlib import contextmanager, redirect_stdout, redirect_stderr
@@ -37,6 +38,20 @@ def negative_log_lik(
     x: Tensor,
 ) -> float:
     return -log_prob(theta, x).mean().item()
+
+
+def emd(
+    theta_ref: List[Tensor],
+    theta_est: List[Tensor],
+) -> Tuple[float, float]:
+    r""""""
+
+    emd_scores = [
+        ot.emd2(P.new_tensor(()), Q.new_tensor(()), torch.cdist(P, Q))
+        for P, Q in zip(theta_ref, theta_est)
+    ]
+
+    return np.mean(emd_scores), np.std(emd_scores)
 
 
 def c2st(

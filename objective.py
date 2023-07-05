@@ -8,7 +8,7 @@ with safe_import_context() as import_ctx:
 
     from torch import Tensor
     from torch.distributions import Distribution
-    from benchmark_utils.common import negative_log_lik, c2st
+    from benchmark_utils.common import negative_log_lik, c2st, emd
 
 
 class Objective(BaseObjective):
@@ -25,6 +25,7 @@ class Objective(BaseObjective):
         "pyro-ppl",
         "pip:sbibm",
         "pip:future",
+        "pip:POT",
     ]
 
     def set_data(
@@ -53,25 +54,33 @@ class Objective(BaseObjective):
         ],
     ):
         log_prob, sample = result
-
         nll_test = negative_log_lik(log_prob, self.theta_test, self.x_test)
         nll_train = negative_log_lik(log_prob, self.theta_train, self.x_train)
 
         if self.theta_ref is None:
             c2st_mean, c2st_std = None, None
+            emd_mean, emd_std = None, None
         else:
             theta_est = [
-                sample(x, self.theta_ref[i].shape[0])
-                for i, x in enumerate(self.x_ref)
+                sample(x, self.theta_ref[i].shape[0]) for i, x in enumerate(self.x_ref)
             ]
 
             c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
+            emd_mean, emd_std = emd(self.theta_ref, theta_est)
 
         return dict(
             value=nll_test,
             nll_train=nll_train,
             c2st_mean=c2st_mean,
             c2st_std=c2st_std,
+            emd_mean=emd_mean,
+            emd_std=emd_std,
+        )
+
+    def get_one_solution(self):
+        return (
+            lambda theta, x: torch.zeros(theta.shape[0]),
+            lambda x, n: torch.randn(n, self.theta_train.shape[-1]),
         )
 
     def get_objective(self):
