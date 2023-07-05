@@ -17,7 +17,10 @@ class Dataset(BaseDataset):
 
     def get_data(self) -> Dict:
         return dict(
-            prior=torch.distributions.MultivariateNormal(torch.zeros(2), torch.eye(2)),
+            prior=torch.distributions.MultivariateNormal(
+                torch.zeros(2),
+                torch.eye(2),
+            ),
             theta_train=torch.randn(self.train_size, 2),
             x_train=torch.randn(self.train_size, 3),
             theta_test=torch.randn(self.test_size, 2),
