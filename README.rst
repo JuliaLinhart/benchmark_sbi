@@ -6,12 +6,12 @@ My Benchopt Benchmark
 Benchopt is a package to simplify and make more transparent and
 reproducible the comparisons of optimization algorithms. This benchmark is dedicated to simulation-based inference (SBI) algorithms. The goal of SBI is to approximate the posterior distribution of a stochastic model (or simulator):
 
-$$q(\\theta | x) \\approx p(\\theta | x) = \\frac{p(x | \\theta) p(\\theta)}{p(x)} = \\frac{p(x | \\theta) p(\\theta)}{\\int_\\Theta p(x | \\theta') p(\\theta') d\\theta'}$$
+$$q(\\theta | x) \\approx p(\\theta | x) = \\frac{p(x | \\theta) p(\\theta)}{p(x)}$$
 
-where $\\theta$ denotes the model-parameters and $x$ is an observation. In SBI the likelihood $p(x | \\theta)$ is implicitly modeled by the stochastic simulator. 
-Placing a prior $p(\\theta)$ over the simulator-parameters, allows us to generate samples from the joint distribution $p(\\theta, x) = p(\\theta)p(x | \\theta)$ which can then be used to approximate the posterior distribution $p(\\theta | x)$ (e.g. via the training of deep generative models).
+where $\\theta$ denotes the model parameters and $x$ is an observation. In SBI the likelihood $p(x | \\theta)$ is implicitly modeled by the stochastic simulator. 
+Placing a prior $p(\\theta)$ over the simulator parameters, allows us to generate samples from the joint distribution $p(\\theta, x) = p(\\theta)p(x | \\theta)$ which can then be used to approximate the posterior distribution $p(\\theta | x)$, e.g. via the training of a deep generative model $$q_{\\phi}(\\theta | x)$$.
 
-In this benchmark we consider only amortized SBI-algorithms, i.e. that allow for a quick inference procedure for any new observation $x$ after a one-time training phase.
+In this benchmark we consider only amortized SBI algorithms, i.e. that allow for a quick inference procedure for any new observation $x$ after a one-time training phase.
 
 Install
 --------
