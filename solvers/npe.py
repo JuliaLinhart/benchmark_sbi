@@ -1,14 +1,11 @@
 from benchopt import BaseSolver, safe_import_context
+from benchmark_utils.typing import Distribution, Tensor
 from typing import Callable
-
 
 with safe_import_context() as import_ctx:
     import lampe
     import torch
     import zuko
-
-    from torch import Tensor
-    from torch.distributions import Distribution
 
 
 class Solver(BaseSolver):

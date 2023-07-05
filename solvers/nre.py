@@ -1,13 +1,10 @@
 from benchopt import BaseSolver, safe_import_context
+from benchmark_utils.typing import Distribution, Tensor
 from typing import Callable
 
 with safe_import_context() as import_ctx:
     import lampe
     import torch
-
-    from lampe.inference import MetropolisHastings
-    from torch import Tensor
-    from torch.distributions import Distribution
 
 
 class Solver(BaseSolver):
@@ -63,7 +60,7 @@ class Solver(BaseSolver):
         def log_p(theta):
             return self.nre(theta, x) + self.prior.log_prob(theta)
 
-        sampler = MetropolisHastings(theta_0, log_f=log_p)
+        sampler = lampe.inference.MetropolisHastings(theta_0, log_f=log_p)
         samples = next(sampler(1024 + 1, burn=1024))  # TODO mettre en params
 
         return samples

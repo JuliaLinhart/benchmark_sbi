@@ -1,16 +1,16 @@
 from benchopt import BaseSolver, safe_import_context
+from benchmark_utils.typing import Distribution, Tensor
 
 with safe_import_context() as import_ctx:
     from sbi.inference import SNPE
     from sbi.utils.get_nn_models import posterior_nn
-    from torch import Tensor
-    from torch.distributions import Distribution
 
     from benchmark_utils.common import dump
 
 
 class Solver(BaseSolver):
     name = "NPE-SBI"
+    # stopping_strategy = "default"
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],

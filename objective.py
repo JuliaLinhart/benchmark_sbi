@@ -1,13 +1,11 @@
 from benchopt import BaseObjective, safe_import_context
+from benchmark_utils.typing import Distribution, Tensor
 from typing import Callable, List, Tuple
-
 
 with safe_import_context() as import_ctx:
     import numpy as np
     import torch
 
-    from torch import Tensor
-    from torch.distributions import Distribution
     from benchmark_utils.common import negative_log_lik, c2st, emd
 
 
@@ -21,11 +19,7 @@ class Objective(BaseObjective):
     install_cmd = "conda"
     requirements = [
         "torch",
-        "scikit-learn",
-        "pyro-ppl",
         "pip:sbibm",
-        "pip:future",
-        "pip:POT",
     ]
 
     def set_data(

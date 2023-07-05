@@ -1,26 +1,24 @@
-from typing import Callable
-
 from benchopt import BaseSolver, safe_import_context
-
+from benchmark_utils.typing import Distribution, Tensor
+from typing import Callable
 
 with safe_import_context() as import_ctx:
     import lampe
     import torch
 
-    from torch import Tensor
-    from torch.distributions import Distribution
-
 
 class Solver(BaseSolver):
     name = "FMPE"
+    stopping_strategy = "callback"
+    parameters = {
+        "layers": [3, 5],
+        "freqs": [3, 5],
+    }
 
     install_cmd = "conda"
     requirements = [
         "pip:lampe",
     ]
-
-    stopping_strategy = "callback"
-    parameters = {"layers": [3, 5], "freqs": [3, 5]}
 
     def get_next(self, n_iter: int) -> int:
         return int(max(n_iter + 10, n_iter * 1.5))
