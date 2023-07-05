@@ -47,7 +47,7 @@ def emd(
     r""""""
 
     emd_scores = [
-        ot.emd2(P.new_tensor(()), Q.new_tensor(()), torch.cdist(P, Q))
+        ot.emd2(P.new_tensor(()), Q.new_tensor(()), torch.cdist(P, Q)).item()
         for P, Q in zip(theta_ref, theta_est)
     ]
 
@@ -63,7 +63,7 @@ def c2st(
     print()
 
     c2st_scores = [
-        metrics.c2st(X=P, Y=Q, z_score=True, n_folds=5)
+        metrics.c2st(X=P, Y=Q, z_score=True, n_folds=5).item()
         for P, Q in tqdm(zip(theta_ref, theta_est), desc="C2ST")
     ]
 
