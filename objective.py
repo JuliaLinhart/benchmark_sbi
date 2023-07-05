@@ -17,6 +17,7 @@ class Objective(BaseObjective):
     requirements = [
         "torch",
         "pip:sbibm",
+        "pip:POT",
     ]
 
     def set_data(
