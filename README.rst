@@ -9,7 +9,7 @@ reproducible the comparisons of optimization algorithms. This benchmark is dedic
 $$q_{\phi}(\\theta | x) \\approx p(\\theta | x) = \\frac{p(x | \\theta) p(\\theta)}{p(x)}$$
 
 where $\\theta$ denotes the model parameters and $x$ is an observation. In SBI the likelihood $p(x | \\theta)$ is implicitly modeled by the stochastic simulator. 
-Placing a prior $p(\\theta)$ over the simulator parameters, allows us to generate samples from the joint distribution $p(\\theta, x) = p(\\theta)p(x | \\theta)$ which can then be used to approximate the posterior distribution $p(\\theta | x)$, e.g. via the training of a deep generative model $q_{\\phi}(\\theta | x)$ with parameters $\\phi$.
+Placing a prior $p(\\theta)$ over the simulator parameters, allows us to generate samples from the joint distribution $p(\\theta, x) = p(x | \\theta)p(\\theta)$ which can then be used to approximate the posterior distribution $p(\\theta | x)$, e.g. via the training of a deep generative model $q_{\\phi}(\\theta | x)$ with parameters $\\phi$.
 
 In this benchmark we consider only amortized SBI algorithms, i.e. that allow for a quick inference procedure for any new observation $x$ after a one-time training phase.
 
