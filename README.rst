@@ -6,7 +6,7 @@ My Benchopt Benchmark
 Benchopt is a package to simplify and make more transparent and
 reproducible the comparisons of optimization algorithms. This benchmark is dedicated to simulation-based inference (SBI) algorithms. The goal of SBI is to approximate the posterior distribution of a stochastic model:
 
-$$q(\\theta | x) \approx p(\\theta | x) \propto p(\\theta)p(x | \\theta)$$
+$$q(\\theta | x) \\approx p(\\theta | x) \\propto p(\\theta)p(x | \\theta)$$
 
 where $\\theta$ is a set of parameters and $x$ is an observation. 
 
