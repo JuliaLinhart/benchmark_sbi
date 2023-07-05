@@ -4,13 +4,19 @@ My Benchopt Benchmark
 |Build Status| |Python 3.8+|
 
 Benchopt is a package to simplify and make more transparent and
-reproducible the comparisons of optimization algorithms. This benchmark is dedicated to simulation-based inference (SBI) algorithms. The goal of SBI is to approximate the posterior distribution of a stochastic model.
+reproducible the comparisons of optimization algorithms. This benchmark is dedicated to simulation-based inference (SBI) algorithms. The goal of SBI is to approximate the posterior distribution of a stochastic model:
 
-Formally, a stochastic model takes (a vector of) parameters $\\theta \\in \\Theta$ as input, samples internally a series $z \\in \\mathcal{Z}$ of latent variables and, finally, produces an observation $x \\in \\mathcal{X} \\sim p(x | \\theta, z)$ as output, thereby defining an implicit likelihood $p(x | \\theta)$. This likelihood is typically intractable as it corresponds to the integral of the joint likelihood $p(x, z | \\theta)$ over all possible trajectories through the latent space $\\mathcal{Z}$. Moreover, in Bayesian inference, we are interested in the posterior distribution
+$$q(\\theta | x) \approx p(\\theta | x) \propto p(\\theta)p(x | \\theta)$$
+
+where $\\theta$ is a set of parameters and $x$ is an observation. 
+
+In SBI the likelihood $p(x | \\theta)$ is implicitly modeled by the stochastic simulator:  
+it takes a set of parameters $\\theta \\in \\Theta$ as input, samples internally a series $z \\in \\mathcal{Z}$ of latent variables and, finally, produces an observation $x \\in \\mathcal{X} \\sim p(x | \\theta)$ as output. 
+By placing a prior $p(\\theta)$ over the simulator-parameters, SBI-algorithms use samples from the joint distribution $p(\\theta, x)$ to approximate the posterior distribution
 
 $$p(\\theta | x) = \\frac{p(x | \\theta) p(\\theta)}{p(x)} = \\frac{p(x | \\theta) p(\\theta)}{\\int_\\Theta p(x | \\theta') p(\\theta') d\\theta'}$$
 
-for some observation $x$ and a prior distribution $p(\\theta)$, which not only involves the intractable likelihood $p(x | \\theta)$ but also an intractable integral over the parameter space $\\Theta$.
+for some observation $x$ and a prior distribution $p(\\theta)$, which not only involves the intractable likelihood $p(x | \\theta)$, but also an intractable integral over the parameter space $\\Theta$ (black box latent space).
 
 Install
 --------
