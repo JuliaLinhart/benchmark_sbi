@@ -6,6 +6,8 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
+    """Dummy dataset."""
+
     name = "simulated"
     parameters = {
         "train_size": [1024],

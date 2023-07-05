@@ -8,11 +8,12 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
-    """Neural Ratio Estimator.
+    r"""Neural ratio estimation (NRE) solver implemented with the
+    :mod:`lampe` package.
 
-    Solver implemented using the LAMPE package.
-
-    Trains a classifier to discriminate between pairs sampled from the joint distribution and the product of marginals.
+    The solver trains a classifier to discriminate between pairs sampled from the joint
+    distribution :math:`p(\theta, x)` and the product of marginals :math:`p(\theta)
+    p(x)`.
 
     References:
         | Approximating Likelihood Ratios with Calibrated Discriminative Classifiers (Cranmer et al., 2015)

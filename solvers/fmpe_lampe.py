@@ -1,4 +1,5 @@
 from benchopt import BaseSolver, safe_import_context
+from benchmark_utils.typing import Distribution, Tensor
 
 from typing import Callable
 
@@ -8,11 +9,12 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
-    r"""Flow Matching Posterior Estimator.
+    r"""Flow matching posterior estimator estimator (FMPE) solver implemented
+    with the :mod:`lampe` package.
 
-    Solver implemented using the LAMPE package.
-    Trains a regression network to approximate a vector field inducing a time-continuous normalizing flow between
-    the posterior distribution and a standard Gaussian distribution.
+    The solver trains a regression network to approximate a vector field inducing a
+    time-continuous normalizing flow between the posterior distribution and a standard
+    Gaussian distribution.
 
     References:
         | Flow Matching for Generative Modeling (Lipman et al., 2023)
@@ -26,15 +28,17 @@ class Solver(BaseSolver):
     stopping_strategy = "callback"
     parameters = {
         "layers": [3, 5],
-        "freqs": [3, 5],  # Embedding frequencies
     }
+
+    requirements = [
+        "pip:lampe",
+    ]
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
         self.theta, self.x = theta, x
         self.fmpe = lampe.inference.FMPE(
             theta.shape[-1],
             x.shape[-1],
-            freqs=self.freqs,
             hidden_features=(64,) * self.layers,
             activation=torch.nn.ELU,
         )

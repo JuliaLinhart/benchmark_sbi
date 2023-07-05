@@ -9,18 +9,18 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
-    r"""Neural Posterior Estimator.
+    r"""Neural posterior estimation (NPE) solver implemented with the
+    :mod:`lampe` package.
 
-    Solver implemented using the LAMPE package.
-
-    Trains a parametric conditional distribution to approximate the posterior distribution of parameters.
-    The optimization problem is to minimize the Kullback-Leibler divergence between the distribution of the observations and the distribution of the flow.
+    The solver trains a parametric conditional distribution :math:`q_\phi(\theta | x)`
+    to approximate the posterior distribution :math:`p(\theta | x)` of parameters given
+    observations.
 
     References:
-        | Fast :math:`\espilon`-free Inference of Simulation Models with Bayesian Conditional Density Estimation (Papamakarios & Murray, 2016)
+        | Fast :math:`\espilon`-free Inference of Simulation Models with Bayesian Conditional Density Estimation (Papamakarios et al., 2016)
         | https://arxiv.org/abs/1605.06376
 
-        | Automatic posterior transformation for likelihood-free inference (Greenberg, Nonnenmacher & Macke,. 2019)
+        | Automatic posterior transformation for likelihood-free inference (Greenberg et al., 2019)
         | https://arxiv.org/abs/1905.07488
     """
 

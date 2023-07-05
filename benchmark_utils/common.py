@@ -15,7 +15,10 @@ from typing import Callable, Dict, List, Tuple
 
 @contextmanager
 def fork():
-    """Context manager which resets the torch random seed to its previous state when exiting."""
+    """Context manager which resets the torch random seed to its previous
+    state when exiting.
+    """
+
     try:
         state = torch.random.get_rng_state()
         yield
@@ -25,7 +28,10 @@ def fork():
 
 @contextmanager
 def dump():
-    """Context manager which dumps the standard outputs (stdout) and standar erorrs (stderr)."""
+    """Context manager which dumps the standard outputs (stdout) and
+    standard errors (stderr).
+    """
+
     with StringIO() as f:
         with redirect_stdout(f), redirect_stderr(f):
             try:
@@ -39,12 +45,14 @@ def negative_log_lik(
     theta: Tensor,
     x: Tensor,
 ) -> float:
-    r"""Computes the the negative log posterior density of a given set of parameters :math:`\theta` conditionned on the observation :math:`x`.
+    r"""Computes the the negative posterior log-density :math:`\log p(\theta | x)`
+    of a given set of parameters :math:`\theta` conditionned on the observation
+    :math:`x`.
 
     Args:
-        log_prob: A function that computes the negative log posterior density of :math:`\theta` conditionned by an observation :math:`x`.
-        theta: A set of parameters.
-        x : An observation.
+        log_prob: A function that computes :math:`p(\theta | x)`.
+        theta: A set of parameters :math:`\theta`.
+        x : An observation :math:`x`.
 
     Returns:
         The evaluated negative log posterior density of :math:`\theta` conditionned by an observation :math:`x`.
@@ -56,7 +64,16 @@ def emd(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
 ) -> Tuple[float, float]:
-    r""""""
+    """Computes the mean and standard deviation of the earth mover's distance (EMD)
+    over reference posterior and estimated posterior samples.
+
+    Args:
+        theta_ref: A list of reference posterior samples.
+        theta_est: A list of estimated posterior samples.
+
+    Returns:
+        Mean and standard deviation of the C2ST scores.
+    """
 
     emd_scores = [
         ot.emd2(P.new_tensor(()), Q.new_tensor(()), torch.cdist(P, Q)).item()
@@ -70,14 +87,15 @@ def c2st(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
 ) -> Tuple[float, float]:
-    """Computes the mean and std of the Classifier 2 Samples Test over or reference posterior and samples from the approximated posterior distribution.
+    """Computes the mean and standard deviation of the classifier 2-samples test (C2ST)
+    scores over reference posterior and estimated posterior samples.
 
     Args:
-        theta_ref: Reference posterior parameters.
-        theta_est: Samples from the approximated posterior distribution.
+        theta_ref: The reference posterior samples.
+        theta_est: The estimated posterior samples.
 
     Returns:
-        Mean and std of the C2ST scores.
+        Mean and standard deviation of the C2ST scores.
     """
 
     print()

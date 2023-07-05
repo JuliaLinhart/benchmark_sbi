@@ -8,10 +8,7 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
-    """Two dimensional dataset which exhibits multimodality.
-
-    Generated using sbibm.
-    """
+    """Two-moons dataset generated with the :mod:`sbibm` package."""
 
     name = "two_moons"
     parameters = {

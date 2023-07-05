@@ -7,7 +7,7 @@ with safe_import_context() as import_ctx:
 
 
 class Objective(BaseObjective):
-    """Computes the Negative-Log-Likelihood on the test and train sets as well as the C2ST mean and std if theta_ref are provided."""
+    """Benchmarks amortized simulation-based inference algorithms."""
 
     name = "sbi"
     parameters = {}
