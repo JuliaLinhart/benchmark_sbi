@@ -16,7 +16,9 @@ By placing a prior $p(\\theta)$ over the simulator-parameters, SBI-algorithms us
 
 $$p(\\theta | x) = \\frac{p(x | \\theta) p(\\theta)}{p(x)} = \\frac{p(x | \\theta) p(\\theta)}{\\int_\\Theta p(x | \\theta') p(\\theta') d\\theta'}$$
 
-for some observation $x$ and a prior distribution $p(\\theta)$, which not only involves the intractable likelihood $p(x | \\theta)$, but also an intractable integral over the parameter space $\\Theta$ (black box latent space).
+which not only involves the intractable likelihood $p(x | \\theta)$, but also an intractable integral over the parameter space $\\Theta$ (black box latent space).
+
+In this benchmark we consider only amortized SBI-algorithms, i.e. that allow for a quick inference procedure for any new observation $x$ after a one-time training phase.
 
 Install
 --------
