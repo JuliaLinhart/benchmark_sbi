@@ -21,7 +21,7 @@ class Solver(BaseSolver):
 
         | Likelihood-free MCMC with Amortized Approximate Ratio Estimators (Hermans et al., 2019)
         | https://arxiv.org/abs/1903.04057
-    """
+    """  # noqa:E501
 
     name = "nre_lampe"
     stopping_strategy = "callback"

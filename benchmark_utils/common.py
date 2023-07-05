@@ -45,18 +45,18 @@ def negative_log_lik(
     theta: Tensor,
     x: Tensor,
 ) -> float:
-    r"""Computes the the negative posterior log-density :math:`\log p(\theta | x)`
-    of a given set of parameters :math:`\theta` conditionned on the observation
-    :math:`x`.
+    r"""Computes the the negative posterior log-density :math:`\log p(\theta | x)` of a
+    given set of parameters :math:`\theta` conditionned on the observation :math:`x`.
 
     Args:
-        log_prob: A function that computes :math:`p(\theta | x)`.
+        log_prob: A function that computes :math:`\log p(\theta | x)`.
         theta: A set of parameters :math:`\theta`.
         x : An observation :math:`x`.
 
     Returns:
-        The evaluated negative log posterior density of :math:`\theta` conditionned by an observation :math:`x`.
-    """
+        The log-density :math:`\log p(\theta | x)`.
+    """  # noqa:E501
+
     return -log_prob(theta, x).mean().item()
 
 
@@ -73,7 +73,7 @@ def emd(
 
     Returns:
         Mean and standard deviation of the C2ST scores.
-    """
+    """  # noqa:E501
 
     emd_scores = [
         ot.emd2(P.new_tensor(()), Q.new_tensor(()), torch.cdist(P, Q)).item()
@@ -91,12 +91,12 @@ def c2st(
     scores over reference posterior and estimated posterior samples.
 
     Args:
-        theta_ref: The reference posterior samples.
-        theta_est: The estimated posterior samples.
+        theta_ref: A list of reference posterior samples.
+        theta_est: A list of estimated posterior samples.
 
     Returns:
         Mean and standard deviation of the C2ST scores.
-    """
+    """  # noqa:E501
 
     print()
 
@@ -115,18 +115,20 @@ def data_generator_sbibm(
     ref_size: int = 0,
     n_per_ref: int = 1024,
 ) -> Dict:
-    r"""Generates training, test and reference pairs of :math:`\theta`, :math:`x` and a prior over :math:`\theta` using sbibm
+    r"""Generates training, test and reference sets for a task of the :mod:`sbibm`
+    package.
 
     Args:
-        name: A task name, either "slcp" or "two_moons".
-        train_size: Number of samples to be considered in the training set.
-        test_size: Number of samples to be considered in the test set.
-        ref_size: Number of observation of reference :math:`x`.
-        n_per_ref: Number of :math:`\theta`sampled from the reference posterior distribution condionned on :math:`x`.
+        name: A task name (e.g. `'two_moons'`).
+        train_size: The number of samples in the training set.
+        test_size: The number of samples in the test set.
+        ref_size: The number of reference posteriors.
+        n_per_ref: The number of samples per reference posteriors.
 
     Returns:
-        Training, test and reference pairs of :math:`\theta`, :math:`x` and the prior over :math:`\theta`.
-    """
+        A dictionary with training, test and reference sets as well as the parameters
+        prior.
+    """  # noqa:E501
 
     task = sbibm.get_task(name)
     prior = task.get_prior()

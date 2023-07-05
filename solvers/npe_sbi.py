@@ -22,7 +22,7 @@ class Solver(BaseSolver):
 
         | Automatic posterior transformation for likelihood-free inference (Greenberg et al., 2019)
         | https://arxiv.org/abs/1905.07488
-    """
+    """  # noqa:E501
 
     name = "npe_sbi"
     parameters = {

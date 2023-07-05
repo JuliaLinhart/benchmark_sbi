@@ -56,7 +56,8 @@ class Objective(BaseObjective):
             emd_mean, emd_std = None, None
         else:
             theta_est = [
-                sample(x, self.theta_ref[i].shape[0]) for i, x in enumerate(self.x_ref)
+                sample(x, self.theta_ref[i].shape[0])
+                for i, x in enumerate(self.x_ref)
             ]
 
             c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)

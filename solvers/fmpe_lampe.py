@@ -22,7 +22,7 @@ class Solver(BaseSolver):
 
         | Flow Matching for Scalable Simulation-Based Inference (Dax et al., 2023)
         | https://arxiv.org/abs/2305.17161
-    """
+    """  # noqa:E501
 
     name = "fmpe_lampe"
     stopping_strategy = "callback"
