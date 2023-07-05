@@ -15,6 +15,7 @@ from typing import Callable, Dict, List, Tuple
 
 @contextmanager
 def fork():
+    """Context manager which resets the torch random seed to its previous state when exiting."""
     try:
         state = torch.random.get_rng_state()
         yield
@@ -24,6 +25,7 @@ def fork():
 
 @contextmanager
 def dump():
+    """Context manager which dumps the standard outputs (stdout) and standar erorrs (stderr)."""
     with StringIO() as f:
         with redirect_stdout(f), redirect_stderr(f):
             try:
@@ -37,6 +39,16 @@ def negative_log_lik(
     theta: Tensor,
     x: Tensor,
 ) -> float:
+    r"""Computes the the negative log posterior density of a given set of parameters :math:`\theta` conditionned on the observation :math:`x`.
+
+    Args:
+        log_prob: A function that computes the negative log posterior density of :math:`\theta` conditionned by an observation :math:`x`.
+        theta: A set of parameters.
+        x : An observation.
+
+    Returns:
+        The evaluated negative log posterior density of :math:`\theta` conditionned by an observation :math:`x`.
+    """
     return -log_prob(theta, x).mean().item()
 
 
@@ -58,7 +70,15 @@ def c2st(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
 ) -> Tuple[float, float]:
-    r""""""
+    """Computes the mean and std of the Classifier 2 Samples Test over or reference posterior and samples from the approximated posterior distribution.
+
+    Args:
+        theta_ref: Reference posterior parameters.
+        theta_est: Samples from the approximated posterior distribution.
+
+    Returns:
+        Mean and std of the C2ST scores.
+    """
 
     print()
 
@@ -77,7 +97,18 @@ def data_generator_sbibm(
     ref_size: int = 0,
     n_per_ref: int = 1024,
 ) -> Dict:
-    r""""""
+    r"""Generates training, test and reference pairs of :math:`\theta`, :math:`x` and a prior over :math:`\theta` using sbibm
+
+    Args:
+        name: A task name, either "slcp" or "two_moons".
+        train_size: Number of samples to be considered in the training set.
+        test_size: Number of samples to be considered in the test set.
+        ref_size: Number of observation of reference :math:`x`.
+        n_per_ref: Number of :math:`\theta`sampled from the reference posterior distribution condionned on :math:`x`.
+
+    Returns:
+        Training, test and reference pairs of :math:`\theta`, :math:`x` and the prior over :math:`\theta`.
+    """
 
     task = sbibm.get_task(name)
     prior = task.get_prior()

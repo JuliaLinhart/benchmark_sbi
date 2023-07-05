@@ -1,5 +1,5 @@
 from benchopt import BaseSolver, safe_import_context
-from benchmark_utils.typing import Distribution, Tensor
+
 from typing import Callable
 
 with safe_import_context() as import_ctx:
@@ -8,24 +8,27 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
+    r"""Flow Matching Posterior Estimator.
+    Trains a regression network to approximate a vector field inducing a time-continuous normalizing flow between
+    the posterior distribution and a standard Gaussian distribution.
+
+    References:
+        | Flow Matching for Generative Modeling (Lipman et al., 2023)
+        | https://arxiv.org/abs/2210.02747
+
+        | Flow Matching for Scalable Simulation-Based Inference (Dax et al., 2023)
+        | https://arxiv.org/abs/2305.17161
+    """
+
     name = "FMPE"
     stopping_strategy = "callback"
     parameters = {
         "layers": [3, 5],
-        "freqs": [3, 5],
+        "freqs": [3, 5],  # Embedding frequencies
     }
-
-    install_cmd = "conda"
-    requirements = [
-        "pip:lampe",
-    ]
-
-    def get_next(self, n_iter: int) -> int:
-        return int(max(n_iter + 10, n_iter * 1.5))
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
         self.theta, self.x = theta, x
-
         self.fmpe = lampe.inference.FMPE(
             theta.shape[-1],
             x.shape[-1],
@@ -36,6 +39,9 @@ class Solver(BaseSolver):
 
         self.loss = lampe.inference.FMPELoss(self.fmpe)
         self.optimizer = torch.optim.Adam(self.fmpe.parameters(), lr=1e-3)
+
+    def get_next(self, n_iter: int) -> int:
+        return int(max(n_iter + 10, n_iter * 1.5))
 
     def run(self, cb: Callable):
         dataset = lampe.data.JointDataset(
