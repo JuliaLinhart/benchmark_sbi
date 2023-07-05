@@ -23,8 +23,7 @@ class Solver(BaseSolver):
         | Automatic posterior transformation for likelihood-free inference (Greenberg, Nonnenmacher & Macke,. 2019)
         | https://arxiv.org/abs/1905.07488
     """
-    name = "NPE-SBI"
-    # stopping_strategy = "default"
+    name = "npe_sbi"
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],

@@ -22,7 +22,7 @@ class Solver(BaseSolver):
         | https://arxiv.org/abs/2305.17161
     """
 
-    name = "FMPE"
+    name = "fmpe_lampe"
     stopping_strategy = "callback"
     parameters = {
         "layers": [3, 5],

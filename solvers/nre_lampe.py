@@ -22,7 +22,7 @@ class Solver(BaseSolver):
         | https://arxiv.org/abs/1903.04057
     """
 
-    name = "NRE"
+    name = "nre_lampe"
     stopping_strategy = "callback"
     parameters = {
         "layers": [3, 5],

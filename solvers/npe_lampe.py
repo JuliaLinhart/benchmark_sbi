@@ -24,7 +24,7 @@ class Solver(BaseSolver):
         | https://arxiv.org/abs/1905.07488
     """
 
-    name = "NPE"
+    name = "npe_lampe"
     stopping_strategy = "callback"
     parameters = {
         "flow": ["MAF", "NSF"],
