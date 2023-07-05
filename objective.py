@@ -3,6 +3,8 @@ from benchmark_utils.typing import Distribution, Tensor
 from typing import Callable, List, Tuple
 
 with safe_import_context() as import_ctx:
+    import torch
+
     from benchmark_utils.common import negative_log_lik, c2st, emd
 
 
