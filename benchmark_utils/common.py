@@ -45,16 +45,19 @@ def negative_log_lik(
     theta: Tensor,
     x: Tensor,
 ) -> float:
-    r"""Computes the the negative posterior log-density :math:`\log p(\theta | x)` of a
+    r"""Expected negative posterior log-likelihood :math:`\log p(\theta | x)` of a
     given set of parameters :math:`\theta` conditionned on the observation :math:`x`.
+    Expectation is taken over the joint distribution :math:`p(\theta, x)`:
+
+            :math:`\mathbb{E}_{\theta,x}[ - \log p(\theta | x) ]`
 
     Args:
         log_prob: A function that computes :math:`\log p(\theta | x)`.
-        theta: A set of parameters :math:`\theta`.
-        x : An observation :math:`x`.
+        theta: A batch of parameter-sets :math:`\theta`.
+        x : A batch of corresponding observations :math:`x \sim p(x | \theta)`.
 
     Returns:
-        The log-density :math:`\log p(\theta | x)`.
+        Expected negative log-likelihood over the joint samples :math`(\theta, x)`.
     """  # noqa:E501
 
     return -log_prob(theta, x).mean().item()
@@ -64,15 +67,18 @@ def emd(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
 ) -> Tuple[float, float]:
-    """Computes the mean and standard deviation of the earth mover's distance (EMD)
-    over reference posterior and estimated posterior samples.
+    """Earth mover's distance (EMD) between the reference posterior :math`p(\theta | x_0)`
+    and estimated posterior :math`q(\theta | x_0)` conditioned on the same observation :math:`x_0`.
+
+    Computes the mean and standard deviation of the EMD scores over a list
+    of posterior samples corresponding to different observations :math:`x_0`.
 
     Args:
         theta_ref: A list of reference posterior samples.
         theta_est: A list of estimated posterior samples.
 
     Returns:
-        Mean and standard deviation of the C2ST scores.
+        Mean and standard deviation of the EMD scores.
     """  # noqa:E501
 
     emd_scores = [
@@ -86,22 +92,35 @@ def emd(
 def c2st(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
+    n_folds: int = 5,
+    z_score: bool = True,
 ) -> Tuple[float, float]:
-    """Computes the mean and standard deviation of the classifier 2-samples test (C2ST)
-    scores over reference posterior and estimated posterior samples.
+    """Classifier 2-Samples Test (C2ST) between the reference posterior :math`p(\theta | x_0)`
+    and estimated posterior :math`q(\theta | x_0)` conditioned on the same observation :math:`x_0`.
+
+    Computes the mean and standard deviation of the C2ST scores (mean classification accuracy
+    over a n-fold cross-validation) over a list of posterior samples corresponding
+    to different observations :math:`x_0`.
 
     Args:
         theta_ref: A list of reference posterior samples.
         theta_est: A list of estimated posterior samples.
+        n_folds: The number of cross-validation folds.
+            Defaults to `5` as in [1].
+        z_score: Whether to normalize the data before training the classifier.
+            Defaults to `True` as recommended in [1].
 
     Returns:
         Mean and standard deviation of the C2ST scores.
+
+    References:
+        [1] `Benchmarking Simulation-Based Inference <https://arxiv.org/abs/2101.04653>`
     """  # noqa:E501
 
     print()
 
     c2st_scores = [
-        metrics.c2st(X=P, Y=Q, z_score=True, n_folds=5).item()
+        metrics.c2st(X=P, Y=Q, z_score=z_score, n_folds=n_folds).item()
         for P, Q in tqdm(
             zip(theta_ref, theta_est), desc="C2ST"
         )  # TODO: hide progress bar between runs (or n_iter)
