@@ -12,9 +12,7 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
-    """Simple likelihood complex posterior (SLCP) dataset generated with the
-    :mod:`sbibm` package.
-    """
+    """Simple likelihood complex posterior (SLCP) dataset."""
 
     name = "slcp"
     parameters = {

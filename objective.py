@@ -9,25 +9,7 @@ with safe_import_context() as import_ctx:
 
 
 class Objective(BaseObjective):
-    """Benchmarks amortized simulation-based inference (SBI) algorithms.
-
-    SBI algorithms aim at estimating the reference posterior :math`p(theta | x)`
-    from a set of observations :math`x ~ p(x | theta)` and a prior :math`p(theta)`.
-
-    Objective: collection of metrics (NLL, EMD, C2ST, MMD, etc.) to quantify the quality
-    of posterior inference:
-        - NLL: computed on a prior-simulator test set $(\theta, x)$.
-            Defines the stopping strategy.
-        - EMD, C2ST and MMD: require sampling from the reference posterior $p(\theta | x_0)$
-            and the estimate $q_{\phi}(\theta | x_0)$ for every considered observation $x_0$.
-
-    Datasets: different prior-simulator pairs :math`(\theta,x)`
-        with :math`\theta \sim p(\theta)` and :math`x \sim p(x | \theta)`
-
-    Solvers: different SBI algorithms (NPE, NRE, FMPE) or different implementations
-        (from :mod`sbi` or :mod`lampe`) of the same algorithms.
-
-    """
+    """Benchmarks amortized simulation-based inference (SBI) algorithms."""
 
     name = "sbi"
     parameters = {}
@@ -36,8 +18,8 @@ class Objective(BaseObjective):
     install_cmd = "conda"
     requirements = [
         "torch",
-        "pip:sbibm",
         "pip:POT",
+        "pip:sbibm",
     ]
 
     def set_data(
@@ -74,7 +56,8 @@ class Objective(BaseObjective):
             emd_mean, emd_std = None, None
         else:
             theta_est = [
-                sample(x, self.theta_ref[i].shape[0]) for i, x in enumerate(self.x_ref)
+                sample(x, self.theta_ref[i].shape[0])
+                for i, x in enumerate(self.x_ref)
             ]
 
             c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
