@@ -3,6 +3,7 @@ from benchmark_utils.typing import Distribution, Tensor
 from typing import Callable, List, Tuple
 
 with safe_import_context() as import_ctx:
+    import time
     import torch
 
     from benchmark_utils.metrics import negative_log_lik, c2st, emd, mmd
@@ -54,11 +55,14 @@ class Objective(BaseObjective):
         if self.theta_ref is None:
             c2st_mean, c2st_std = None, None
             emd_mean, emd_std = None, None
+            mmd_mean, mmd_std = None, None
         else:
+            start = time.perf_counter()
             theta_est = [
                 sample(x, self.theta_ref[i].shape[0])
                 for i, x in enumerate(self.x_ref)
             ]
+            end = time.perf_counter()
 
             c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
             emd_mean, emd_std = emd(self.theta_ref, theta_est)
@@ -73,6 +77,7 @@ class Objective(BaseObjective):
             emd_std=emd_std,
             mmd_mean=mmd_mean,
             mmd_std=mmd_std,
+            sampling_time=end - start,
         )
 
     def get_one_solution(self):

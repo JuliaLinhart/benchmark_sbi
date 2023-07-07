@@ -47,7 +47,7 @@ class Solver(BaseSolver):
         self.optimizer = torch.optim.Adam(self.fmpe.parameters(), lr=1e-3)
 
     def get_next(self, n_iter: int) -> int:
-        return int(max(n_iter + 10, n_iter * 1.5))
+        return n_iter + 10
 
     def run(self, cb: Callable):
         dataset = lampe.data.JointDataset(
