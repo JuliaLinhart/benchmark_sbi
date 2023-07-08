@@ -90,10 +90,10 @@ class Dataset(BaseDataset):
                     x = x_ref[i]
 
                     def log_joint(theta: Tensor) -> Tensor:
-                        r"""log p(x, theta)"""
-                        return self.likelihood(theta).log_prob(x) + prior.log_prob(
-                            theta
-                        )
+                        log_likelihood = self.likelihood(theta).log_prob(x)
+                        log_prior = prior.log_prob(theta)
+
+                        return log_likelihood + log_prior
 
                     sampler = lampe.inference.MetropolisHastings(
                         theta_0, log_f=log_joint
