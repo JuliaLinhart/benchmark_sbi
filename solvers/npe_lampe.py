@@ -27,7 +27,7 @@ class Solver(BaseSolver):
     name = "npe_lampe"
     stopping_strategy = "callback"
     parameters = {
-        "flow": ["MAF", "NSF"],
+        "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
     }
 
@@ -43,7 +43,7 @@ class Solver(BaseSolver):
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
         self.theta, self.x = theta, x
 
-        build = zuko.flows.MAF if self.flow == "MAF" else zuko.flows.NSF
+        build = zuko.flows.MAF if self.flow == "maf" else zuko.flows.NSF
 
         self.npe = lampe.inference.NPE(
             theta.shape[-1],
