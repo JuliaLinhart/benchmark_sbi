@@ -28,6 +28,7 @@ class Solver(BaseSolver):
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
+        "z_score": ["independent", "none"],
     }
 
     def get_next(self, n_iter: int) -> int:
@@ -41,6 +42,8 @@ class Solver(BaseSolver):
             self.flow,
             num_transforms=self.transforms,
             use_random_permutations=False,
+            z_score_theta=self.z_score,
+            z_score_x=self.z_score,
         )
 
         npe = SNPE(self.prior, density_estimator=estimator)
