@@ -18,7 +18,7 @@ class Objective(BaseObjective):
 
     install_cmd = "conda"
     requirements = [
-        "torch",
+        "pytorch",
         "pip:POT",
         "pip:sbibm",
     ]
