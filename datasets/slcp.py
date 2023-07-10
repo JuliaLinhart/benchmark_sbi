@@ -100,7 +100,7 @@ class Dataset(BaseDataset):
                     )
                     samples = next(sampler(4096 + 1, burn=4096))
                     theta_ref.append(samples)
-                
+
                 x_ref = x_ref.flatten(1)
             else:
                 theta_ref = None
