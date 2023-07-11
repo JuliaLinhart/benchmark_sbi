@@ -6,12 +6,14 @@ __cache__
 .coverage
 **/outputs
 joblib/
+benchopt_run/
 
 # IDE specific folders
 .vscode
 
 # Config files
 benchopt.ini
+slurm_config.yml
 
 .DS_Store
 coverage.xml

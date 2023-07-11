@@ -6,6 +6,8 @@ with safe_import_context() as import_ctx:
     import time
     import torch
 
+    torch.distributions.Distribution._validate_args = False
+
     from benchmark_utils.metrics import negative_log_lik, c2st, emd, mmd
 
 
