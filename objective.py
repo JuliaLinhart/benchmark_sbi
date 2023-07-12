@@ -63,7 +63,7 @@ class Objective(BaseObjective):
         nll_train = negative_log_lik(log_prob, self.theta_train, self.x_train)
 
         if self.theta_ref is None:
-            # c2st_mean, c2st_std = None, None
+            c2st_mean, c2st_std = None, None
             emd_mean, emd_std = None, None
             mmd_mean, mmd_std = None, None
             sampling_time = None
@@ -73,7 +73,7 @@ class Objective(BaseObjective):
             theta_est = [sample(x, n) for x, n in zip(self.x_ref, n_ref)]
             end = time.perf_counter()
 
-            # c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
+            c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
             emd_mean, emd_std = emd(self.theta_ref, theta_est)
             mmd_mean, mmd_std = mmd(self.theta_ref, theta_est)
             sampling_time = end - start
@@ -81,8 +81,8 @@ class Objective(BaseObjective):
         return dict(
             value=nll_test,
             nll_train=nll_train,
-            # c2st_mean=c2st_mean,
-            # c2st_std=c2st_std,
+            c2st_mean=c2st_mean,
+            c2st_std=c2st_std,
             emd_mean=emd_mean,
             emd_std=emd_std,
             mmd_mean=mmd_mean,
