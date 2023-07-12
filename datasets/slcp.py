@@ -23,6 +23,12 @@ class Dataset(BaseDataset):
         "seed": [42],
     }
 
+    install_cmd = "conda"
+    requirements = [
+        "pytorch",
+        "pip:lampe",
+    ]
+
     def prior(self):
         r"""p(theta)"""
 

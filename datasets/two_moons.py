@@ -19,6 +19,12 @@ class Dataset(BaseDataset):
         "seed": [42],
     }
 
+    install_cmd = "conda"
+    requirements = [
+        "pytorch",
+        "pip:sbibm",
+    ]
+
     def get_data(self) -> Dict:
         with fork():
             torch.manual_seed(self.seed)

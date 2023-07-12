@@ -31,6 +31,11 @@ class Solver(BaseSolver):
         "z_score": ["independent", "none"],
     }
 
+    install_cmd = "conda"
+    requirements = [
+        "pip:sbi",
+    ]
+
     def get_next(self, n_iter: int) -> int:
         return n_iter + 10
 
