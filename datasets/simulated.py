@@ -17,7 +17,6 @@ class Dataset(BaseDataset):
         "seed": [42],
     }
 
-
     def get_data(self) -> Dict:
         return dict(
             prior=torch.distributions.MultivariateNormal(
@@ -28,9 +27,6 @@ class Dataset(BaseDataset):
             x_train=torch.randn(self.train_size, 3),
             theta_test=torch.randn(self.test_size, 2),
             x_test=torch.randn(self.test_size, 3),
-            theta_ref=[
-                torch.randn(self.n_per_ref, 2)
-                for i in range(self.ref_size)
-            ],
+            theta_ref=[torch.randn(self.n_per_ref, 2) for i in range(self.ref_size)],
             x_ref=torch.randn(self.ref_size, 3),
         )
