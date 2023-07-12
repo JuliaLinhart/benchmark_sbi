@@ -12,8 +12,6 @@ class Dataset(BaseDataset):
     parameters = {
         "train_size": [1024],
         "test_size": [256],
-        "ref_size": [0],
-        "n_per_ref": [1024],
         "seed": [42],
     }
 
@@ -27,8 +25,6 @@ class Dataset(BaseDataset):
             x_train=torch.randn(self.train_size, 3),
             theta_test=torch.randn(self.test_size, 2),
             x_test=torch.randn(self.test_size, 3),
-            theta_ref=[
-                torch.randn(self.n_per_ref, 2) for i in range(self.ref_size)
-            ],
-            x_ref=torch.randn(self.ref_size, 3),
+            theta_ref=None,
+            x_ref=None,
         )

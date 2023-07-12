@@ -30,10 +30,13 @@ class Solver(BaseSolver):
         "layers": [3, 5],
     }
 
-    install_cmd = "conda"
     requirements = [
         "pip:lampe",
     ]
+
+    @staticmethod
+    def get_next(n_iter: int) -> int:
+        return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
         self.theta, self.x = theta, x
@@ -46,10 +49,6 @@ class Solver(BaseSolver):
 
         self.loss = lampe.inference.FMPELoss(self.fmpe)
         self.optimizer = torch.optim.Adam(self.fmpe.parameters(), lr=1e-3)
-
-    @staticmethod
-    def get_next(n_iter: int) -> int:
-        return n_iter + 10
 
     def run(self, cb: Callable):
         dataset = lampe.data.JointDataset(

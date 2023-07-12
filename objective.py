@@ -16,10 +16,8 @@ class Objective(BaseObjective):
     parameters = {}
     min_benchopt_version = "1.3"
 
-    install_cmd = "conda"
     requirements = [
         "pytorch:pytorch",
-        "pip:numpy",
         "pip:POT",
         "pip:sbibm",
     ]
@@ -34,10 +32,10 @@ class Objective(BaseObjective):
         theta_ref: List[Tensor] = None,
         x_ref: Tensor = None,
     ):
-        # set prior
+        # Set prior
         self.prior = prior
 
-        # normalize and set data
+        # Normalize and set data
         mean_theta, std_theta = theta_train.mean(dim=0), theta_train.std(dim=0)
         mean_x, std_x = x_train.mean(dim=0), x_train.std(dim=0)
 
@@ -46,11 +44,15 @@ class Objective(BaseObjective):
         self.theta_test = (theta_test - mean_theta) / std_theta
         self.x_test = (x_test - mean_x) / std_x
 
-        if theta_ref is not None:
-            for i in range(len(theta_ref)):
-                theta_ref[i] = (theta_ref[i] - mean_theta) / std_theta
-        self.theta_ref = theta_ref
-        self.x_ref = (x_ref - mean_x) / std_x
+        if theta_ref is None:
+            self.x_ref = x_ref
+            self.theta_ref = theta_ref
+        else:
+            self.x_ref = (x_ref - mean_x) / std_x
+            self.theta_ref = [
+                (theta - mean_theta) / std_theta
+                for theta in theta_ref
+            ]
 
     def compute(
         self,

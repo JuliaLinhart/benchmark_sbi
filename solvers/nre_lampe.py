@@ -29,7 +29,6 @@ class Solver(BaseSolver):
         "layers": [3, 5],
     }
 
-    install_cmd = "conda"
     requirements = [
         "pip:lampe",
     ]

@@ -30,9 +30,8 @@ class Solver(BaseSolver):
         "transforms": [1, 3, 5],
     }
 
-    install_cmd = "conda"
     requirements = [
-        "pip:sbibm",
+        "pip:sbi",
     ]
 
     @staticmethod
