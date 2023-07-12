@@ -5,7 +5,6 @@ import torch
 
 from contextlib import contextmanager, redirect_stdout, redirect_stderr
 from io import StringIO
-from torch import Tensor
 from tqdm import tqdm
 from typing import Dict
 
@@ -97,23 +96,3 @@ def data_generator_sbibm(
         theta_ref=theta_ref,
         x_ref=x_ref,
     )
-
-
-def normalize_data(batch: Tensor) -> Tensor:
-    """Normalizes the data to zero mean and unit var for each dimension independently.
-    (This is the default normalization in :mod:`sbi`)
-
-    Args:
-        batch: A batch of data.
-
-    Returns:
-        The normalized batch.
-    """  # noqa:E501
-
-    mean = torch.mean(batch, dim=0)
-    if len(batch) > 1:
-        std = torch.std(batch, dim=0)
-    else:
-        std = torch.ones(1)
-
-    return (batch - mean) / std

@@ -6,7 +6,6 @@ with safe_import_context() as import_ctx:
     import time
     import torch
 
-    from benchmark_utils.common import normalize_data
     from benchmark_utils.metrics import negative_log_lik, c2st, emd, mmd
 
 
@@ -19,7 +18,8 @@ class Objective(BaseObjective):
 
     install_cmd = "conda"
     requirements = [
-        "pytorch",
+        "pytorch:pytorch",
+        "pip:numpy",
         "pip:POT",
         "pip:sbibm",
     ]
@@ -38,18 +38,19 @@ class Objective(BaseObjective):
         self.prior = prior
 
         # normalize and set data
-        self.theta_train = normalize_data(theta_train)
-        self.x_train = normalize_data(x_train)
-        self.theta_test = normalize_data(theta_test)
-        self.x_test = normalize_data(x_test)
+        mean_theta, std_theta = theta_train.mean(dim=0), theta_train.std(dim=0)
+        mean_x, std_x = x_train.mean(dim=0), x_train.std(dim=0)
+
+        self.theta_train = (theta_train - mean_theta) / std_theta
+        self.x_train = (x_train - mean_x) / std_x
+        self.theta_test = (theta_test - mean_theta) / std_theta
+        self.x_test = (x_test - mean_x) / std_x
 
         if theta_ref is not None:
             for i in range(len(theta_ref)):
-                theta_ref[i] = normalize_data(theta_ref[i])
-                # x_ref[i] is not normalized (single observation)
-
+                theta_ref[i] = (theta_ref[i] - mean_theta) / std_theta
         self.theta_ref = theta_ref
-        self.x_ref = x_ref
+        self.x_ref = (x_ref - mean_x) / std_x
 
     def compute(
         self,
