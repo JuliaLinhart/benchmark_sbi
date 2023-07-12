@@ -48,7 +48,8 @@ class Solver(BaseSolver):
         self.loss = lampe.inference.FMPELoss(self.fmpe)
         self.optimizer = torch.optim.Adam(self.fmpe.parameters(), lr=1e-3)
 
-    def get_next(self, n_iter: int) -> int:
+    @staticmethod
+    def get_next(n_iter: int) -> int:
         return n_iter + 10
 
     def run(self, cb: Callable):
