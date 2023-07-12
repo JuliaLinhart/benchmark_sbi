@@ -12,15 +12,11 @@ class Dataset(BaseDataset):
     parameters = {
         "train_size": [1024],
         "test_size": [256],
-        "ref_size": [16],
+        "ref_size": [0],
         "n_per_ref": [1024],
         "seed": [42],
     }
 
-    install_cmd = "conda"
-    requirements = [
-        "pytorch",
-    ]
 
     def get_data(self) -> Dict:
         return dict(

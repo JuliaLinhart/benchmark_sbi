@@ -21,7 +21,6 @@ class Dataset(BaseDataset):
 
     install_cmd = "conda"
     requirements = [
-        "pytorch",
         "pip:sbibm",
     ]
 
