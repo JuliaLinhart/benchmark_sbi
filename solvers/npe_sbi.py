@@ -33,7 +33,7 @@ class Solver(BaseSolver):
 
     install_cmd = "conda"
     requirements = [
-        "pip:sbi",
+        "pip:sbibm",
     ]
 
     @staticmethod
