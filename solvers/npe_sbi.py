@@ -28,7 +28,6 @@ class Solver(BaseSolver):
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
-        "z_score": ["independent", "none"],
     }
 
     install_cmd = "conda"
@@ -48,8 +47,9 @@ class Solver(BaseSolver):
             self.flow,
             num_transforms=self.transforms,
             use_random_permutations=False,
-            z_score_theta=self.z_score,
-            z_score_x=self.z_score,
+            # no z_score, data is normalized in `set_data` (objective)
+            z_score_theta='none',
+            z_score_x='none',
         )
 
         npe = SNPE(self.prior, density_estimator=estimator)
