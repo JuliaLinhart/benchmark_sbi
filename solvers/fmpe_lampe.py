@@ -32,7 +32,6 @@ class Solver(BaseSolver):
 
     install_cmd = "conda"
     requirements = [
-        "pytorch",
         "pip:lampe",
     ]
 
