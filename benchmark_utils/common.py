@@ -1,5 +1,6 @@
-r""""""
+r"""Common helpers."""
 
+import pyro
 import sbibm
 import torch
 
@@ -7,6 +8,9 @@ from contextlib import contextmanager, redirect_stdout, redirect_stderr
 from io import StringIO
 from tqdm import tqdm
 from typing import Dict
+
+
+pyro.distributions.enable_validation(False)
 
 
 @contextmanager

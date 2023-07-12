@@ -1,13 +1,17 @@
-r""""""
+r"""Objective and metrics."""
 
 import numpy as np
 import ot
+import pyro
 import sbibm.metrics as metrics
 import torch
 
 from torch import Tensor
 from tqdm import tqdm
 from typing import Callable, List, Tuple
+
+
+pyro.distributions.enable_validation(False)
 
 
 def negative_log_lik(
