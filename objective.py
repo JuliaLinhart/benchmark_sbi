@@ -59,8 +59,8 @@ class Objective(BaseObjective):
             sampling_time = None
         else:
             start = time.perf_counter()
-            n_samples = self.theta_ref[0].shape[0]
-            theta_est = [sample(x, n_samples) for x in self.x_ref]
+            n_ref = (theta.shape[0] for theta in self.theta_ref)
+            theta_est = [sample(x, n) for x, n in zip(self.x_ref, n_ref)]
             end = time.perf_counter()
 
             c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
