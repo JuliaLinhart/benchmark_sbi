@@ -23,7 +23,6 @@ class Dataset(BaseDataset):
         "seed": [42],
     }
 
-    install_cmd = "conda"
     requirements = [
         "pip:lampe",
     ]
