@@ -1,4 +1,4 @@
-r""""""
+r"""Typing hacks."""
 
 from typing import TypeVar
 
