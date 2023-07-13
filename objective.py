@@ -19,6 +19,7 @@ class Objective(BaseObjective):
     requirements = [
         "pytorch:pytorch",
         "pip:POT",
+        "pip:pyro-ppl<1.8.5",
         "pip:sbibm",
     ]
 
