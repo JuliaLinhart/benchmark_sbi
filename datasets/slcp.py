@@ -23,6 +23,10 @@ class Dataset(BaseDataset):
         "seed": [42],
     }
 
+    requirements = [
+        "pip:lampe",
+    ]
+
     def prior(self):
         r"""p(theta)"""
 
@@ -74,10 +78,10 @@ class Dataset(BaseDataset):
             simulator = self.simulator
 
             theta_train = prior.sample((self.train_size,))
-            x_train = simulator(theta_train)
+            x_train = simulator(theta_train).flatten(1)
 
             theta_test = prior.sample((self.test_size,))
-            x_test = simulator(theta_test)
+            x_test = simulator(theta_test).flatten(1)
 
             if self.ref_size > 0:
                 theta_ref = prior.sample((self.ref_size,))
@@ -100,6 +104,8 @@ class Dataset(BaseDataset):
                     )
                     samples = next(sampler(4096 + 1, burn=4096))
                     theta_ref.append(samples)
+
+                x_ref = x_ref.flatten(1)
             else:
                 theta_ref = None
                 x_ref = None
@@ -107,9 +113,9 @@ class Dataset(BaseDataset):
             return dict(
                 prior=prior,
                 theta_train=theta_train,
-                x_train=x_train.flatten(1),
+                x_train=x_train,
                 theta_test=theta_test,
-                x_test=x_test.flatten(1),
+                x_test=x_test,
                 theta_ref=theta_ref,
-                x_ref=x_ref.flatten(1),
+                x_ref=x_ref,
             )

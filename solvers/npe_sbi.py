@@ -30,7 +30,12 @@ class Solver(BaseSolver):
         "transforms": [1, 3, 5],
     }
 
-    def get_next(self, n_iter: int) -> int:
+    requirements = [
+        "pip:sbi",
+    ]
+
+    @staticmethod
+    def get_next(n_iter: int) -> int:
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
@@ -41,6 +46,9 @@ class Solver(BaseSolver):
             self.flow,
             num_transforms=self.transforms,
             use_random_permutations=False,
+            # no z_score, data is normalized in `set_data` (objective)
+            z_score_theta='none',
+            z_score_x='none',
         )
 
         npe = SNPE(self.prior, density_estimator=estimator)

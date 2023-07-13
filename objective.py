@@ -16,9 +16,8 @@ class Objective(BaseObjective):
     parameters = {}
     min_benchopt_version = "1.3"
 
-    install_cmd = "conda"
     requirements = [
-        "torch",
+        "pytorch:pytorch",
         "pip:POT",
         "pip:sbibm",
     ]
@@ -33,13 +32,27 @@ class Objective(BaseObjective):
         theta_ref: List[Tensor] = None,
         x_ref: Tensor = None,
     ):
+        # Set prior
         self.prior = prior
-        self.theta_train = theta_train
-        self.x_train = x_train
-        self.theta_test = theta_test
-        self.x_test = x_test
-        self.theta_ref = theta_ref
-        self.x_ref = x_ref
+
+        # Normalize and set data
+        mean_theta, std_theta = theta_train.mean(dim=0), theta_train.std(dim=0)
+        mean_x, std_x = x_train.mean(dim=0), x_train.std(dim=0)
+
+        self.theta_train = (theta_train - mean_theta) / std_theta
+        self.x_train = (x_train - mean_x) / std_x
+        self.theta_test = (theta_test - mean_theta) / std_theta
+        self.x_test = (x_test - mean_x) / std_x
+
+        if theta_ref is None:
+            self.x_ref = x_ref
+            self.theta_ref = theta_ref
+        else:
+            self.x_ref = (x_ref - mean_x) / std_x
+            self.theta_ref = [
+                (theta - mean_theta) / std_theta
+                for theta in theta_ref
+            ]
 
     def compute(
         self,
@@ -56,17 +69,17 @@ class Objective(BaseObjective):
             c2st_mean, c2st_std = None, None
             emd_mean, emd_std = None, None
             mmd_mean, mmd_std = None, None
+            sampling_time = None
         else:
             start = time.perf_counter()
-            theta_est = [
-                sample(x, self.theta_ref[i].shape[0])
-                for i, x in enumerate(self.x_ref)
-            ]
+            n_ref = (theta.shape[0] for theta in self.theta_ref)
+            theta_est = [sample(x, n) for x, n in zip(self.x_ref, n_ref)]
             end = time.perf_counter()
 
             c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
             emd_mean, emd_std = emd(self.theta_ref, theta_est)
             mmd_mean, mmd_std = mmd(self.theta_ref, theta_est)
+            sampling_time = end - start
 
         return dict(
             value=nll_test,
@@ -77,7 +90,7 @@ class Objective(BaseObjective):
             emd_std=emd_std,
             mmd_mean=mmd_mean,
             mmd_std=mmd_std,
-            sampling_time=end - start,
+            sampling_time=sampling_time,
         )
 
     def get_one_solution(self):
