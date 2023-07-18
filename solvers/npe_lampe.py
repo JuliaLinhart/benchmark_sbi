@@ -26,16 +26,13 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "npe_lampe"
-
     stopping_criterion = SufficientProgressCriterion(
         patience=10, strategy="callback"
     )
-
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
     }
-
     requirements = [
         "pip:lampe",
     ]

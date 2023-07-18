@@ -25,15 +25,12 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "nre_lampe"
-
     stopping_criterion = SufficientProgressCriterion(
         patience=10, strategy="callback"
     )
-
     parameters = {
         "layers": [3, 5],
     }
-
     requirements = [
         "pip:lampe",
     ]

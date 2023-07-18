@@ -26,16 +26,13 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "npe_sbi"
-
     stopping_criterion = SufficientProgressCriterion(
         patience=10,
     )
-
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
     }
-
     requirements = [
         "pip:sbi",
     ]
