@@ -1,4 +1,5 @@
 from benchopt import BaseSolver, safe_import_context
+from benchopt.stopping_criterion import SufficientProgressCriterion
 from benchmark_utils.typing import Distribution, Tensor
 from typing import Callable
 
@@ -24,7 +25,11 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "nre_lampe"
-    stopping_strategy = "callback"
+
+    stopping_criterion = SufficientProgressCriterion(
+        patience=10, strategy="callback"
+    )
+
     parameters = {
         "layers": [3, 5],
     }
