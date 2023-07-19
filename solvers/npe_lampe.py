@@ -37,6 +37,7 @@ class Solver(BaseSolver):
 
     @staticmethod
     def get_next(n_iter: int) -> int:
+        # Avoids evaluating metrics at each iteration which is time consuming.
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
@@ -55,6 +56,7 @@ class Solver(BaseSolver):
         self.optimizer = torch.optim.Adam(self.npe.parameters(), lr=1e-3)
 
     def run(self, cb: Callable):
+        # Training of the flow.
         dataset = lampe.data.JointDataset(
             self.theta,
             self.x,

@@ -36,12 +36,14 @@ class Solver(BaseSolver):
 
     @staticmethod
     def get_next(n_iter: int) -> int:
+        # Avoids evaluating metrics at each iteration which is time consuming.
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
         self.theta, self.x, self.prior = theta, x, prior
 
     def run(self, n_iter: int):
+        # Training of the flow.
         estimator = posterior_nn(
             self.flow,
             num_transforms=self.transforms,

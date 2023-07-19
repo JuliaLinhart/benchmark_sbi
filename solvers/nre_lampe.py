@@ -35,6 +35,7 @@ class Solver(BaseSolver):
 
     @staticmethod
     def get_next(n_iter: int) -> int:
+        # Avoids evaluating metrics at each iteration which is time consuming.
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
@@ -50,6 +51,7 @@ class Solver(BaseSolver):
         self.optimizer = torch.optim.Adam(self.nre.parameters(), lr=1e-3)
 
     def run(self, cb: Callable):
+        # Training of the flow.
         dataset = lampe.data.JointDataset(
             self.theta,
             self.x,
@@ -71,6 +73,15 @@ class Solver(BaseSolver):
         )
 
     def sample(self, x: Tensor, n: int) -> Tensor:
+        r"""Samples from the estimated posterior distribution :math`q(\theta | x)`
+
+        Args:
+            x: observations.
+            n: number of samples desired.
+
+        Returns:
+            samples from the estimated posterior.
+        """
         theta_0 = self.prior.sample((n,))
 
         def log_p(theta):
