@@ -59,7 +59,7 @@ class Solver(BaseSolver):
                 )
             elif self.flow == "nsf":
                 MAT = partial(
-                    transforms.MaskedPiecewiseRationalQuadraticAutoregressiveTransform,
+                    transforms.MaskedPiecewiseRationalQuadraticAutoregressiveTransform,  # noqa:E501
                     features=features,
                     context_features=context,
                     hidden_features=64,
