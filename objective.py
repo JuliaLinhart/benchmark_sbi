@@ -75,10 +75,10 @@ class Objective(BaseObjective):
             theta_est = [sample(x, n) for x, n in zip(self.x_ref, n_ref)]
             end = time.perf_counter()
 
-        c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
-        emd_mean, emd_std = emd(self.theta_ref, theta_est)
-        mmd_mean, mmd_std = mmd(self.theta_ref, theta_est)
-        sampling_time = end - start
+            c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
+            emd_mean, emd_std = emd(self.theta_ref, theta_est)
+            mmd_mean, mmd_std = mmd(self.theta_ref, theta_est)
+            sampling_time = end - start
 
         return dict(
             value=nll_test,
