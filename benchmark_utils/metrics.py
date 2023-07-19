@@ -41,7 +41,7 @@ def emd(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
 ) -> Tuple[float, float]:
-    """Earth mover's distance (EMD) between reference posteriors :math`p(\theta | x_i)`
+    r"""Earth mover's distance (EMD) between reference posteriors :math`p(\theta | x_i)`
     and estimated posteriors :math`q(\theta | x_i)` conditioned on observations
     :math:`x_i`.
 
@@ -67,7 +67,7 @@ def c2st(
     n_folds: int = 5,
     z_score: bool = True,
 ) -> Tuple[float, float]:
-    """Classifier 2-samples test (C2ST) between reference posteriors :math`p(\theta | x_i)`
+    r"""Classifier 2-samples test (C2ST) between reference posteriors :math`p(\theta | x_i)`
     and estimated posteriors :math`q(\theta | x_i)` conditioned on observations
     :math:`x_i`.
 
@@ -104,7 +104,7 @@ def mmd(
     theta_est: List[Tensor],
     z_score: bool = False,
 ) -> Tuple[float, float]:
-    """Maximum mean discrepancy (MMD) between reference posteriors :math`p(\theta | x_i)`
+    r"""Maximum mean discrepancy (MMD) between reference posteriors :math`p(\theta | x_i)`
     and estimated posteriors :math`q(\theta | x_i)` conditioned on observations
     :math:`x_i`.
 
