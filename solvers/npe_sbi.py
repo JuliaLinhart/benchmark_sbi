@@ -1,4 +1,5 @@
 from benchopt import BaseSolver, safe_import_context
+from benchopt.stopping_criterion import SufficientProgressCriterion
 from benchmark_utils.typing import Distribution, Tensor
 
 with safe_import_context() as import_ctx:
@@ -25,11 +26,13 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "npe_sbi"
+    stopping_criterion = SufficientProgressCriterion(
+        patience=10,
+    )
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
     }
-
     requirements = [
         "pip:sbi",
     ]
@@ -47,8 +50,8 @@ class Solver(BaseSolver):
             num_transforms=self.transforms,
             use_random_permutations=False,
             # no z_score, data is normalized in `set_data` (objective)
-            z_score_theta='none',
-            z_score_x='none',
+            z_score_theta="none",
+            z_score_x="none",
         )
 
         npe = SNPE(self.prior, density_estimator=estimator)
