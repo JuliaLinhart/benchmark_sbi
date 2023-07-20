@@ -55,6 +55,7 @@ class Solver(BaseSolver):
                     features=features,
                     context_features=context,
                     hidden_features=64,
+                    num_blocks=2,
                     use_residual_blocks=False,
                 )
             elif self.flow == "nsf":
@@ -63,6 +64,7 @@ class Solver(BaseSolver):
                     features=features,
                     context_features=context,
                     hidden_features=64,
+                    num_blocks=2,
                     use_residual_blocks=False,
                     tails="linear",
                     tail_bound=5.0,
