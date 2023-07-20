@@ -119,7 +119,7 @@ class Objective(BaseObjective):
         dict: dictionary of metrics.
             - value: metric used as stopping criterion (NLL on test data)
             - any other metric computed ...
-        """
+        """ # noqa:E501
         # Get result: `log_prob`` and `sample` functions from the solver.
         log_prob, sample = result
 
@@ -164,7 +164,7 @@ class Objective(BaseObjective):
     def get_one_solution(self):
         r"""Function that returns the same type of output as `Solver.get_result`
         but for testing purposes only.
-        """
+        """ # noqa:E501
         return (
             lambda theta, x: torch.zeros(theta.shape[0]),
             lambda x, n: torch.randn(n, self.theta_train.shape[-1]),
@@ -178,5 +178,5 @@ class Objective(BaseObjective):
         --------
         dict: contains training data and prior required by some solvers (NRE)
             to compute the result: `log_prob` and `sample` functions.
-        """
+        """ # noqa:E501
         return dict(theta=self.theta_train, x=self.x_train, prior=self.prior)

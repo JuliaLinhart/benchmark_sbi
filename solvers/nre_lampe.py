@@ -97,7 +97,7 @@ class Solver(BaseSolver):
 
         Returns:
             samples from the estimated posterior at given observation.
-        """
+        """ # noqa:E501
         theta_0 = self.prior.sample((n,))
 
         # log q(theta | x): log probability of the estimated posterior
