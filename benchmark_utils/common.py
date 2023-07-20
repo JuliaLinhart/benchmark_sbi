@@ -51,6 +51,7 @@ def data_generator_sbibm(
     package.
 
     Args:
+    -----
         name: A task name (e.g. `'two_moons'`).
         train_size: The number of samples in the training set.
         test_size: The number of samples in the test set.
@@ -58,6 +59,7 @@ def data_generator_sbibm(
         n_per_ref: The number of samples per reference posteriors.
 
     Returns:
+    --------
         A dictionary with training, test and reference sets as well as the parameters
         prior.
     """  # noqa:E501

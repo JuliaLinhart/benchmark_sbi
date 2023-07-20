@@ -25,6 +25,8 @@ class Solver(BaseSolver):
 
     name = "nre_lampe"
     stopping_strategy = "callback"
+    # parameters that can be called with `self`,
+    # all possible combinations are used in the benchmark.
     parameters = {
         "layers": [3, 5],
     }
@@ -35,10 +37,15 @@ class Solver(BaseSolver):
 
     @staticmethod
     def get_next(n_iter: int) -> int:
-        # Avoids evaluating metrics at each iteration which is time consuming.
+        """Only evaluate the result every 10 epochs.
+        Evaluating metrics (such as C2ST) at each epoch is time consuming
+        and comes with noisy validation curves.
+        """
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
+        """Initializes the solver with the given `parameters`."""
+
         self.theta, self.x, self.prior = theta, x, prior
 
         self.nre = lampe.inference.NRE(
@@ -51,7 +58,8 @@ class Solver(BaseSolver):
         self.optimizer = torch.optim.Adam(self.nre.parameters(), lr=1e-3)
 
     def run(self, cb: Callable):
-        # Training of the flow.
+        """Training of the NRE."""
+
         dataset = lampe.data.JointDataset(
             self.theta,
             self.x,
@@ -59,7 +67,7 @@ class Solver(BaseSolver):
             shuffle=True,
         )
 
-        while cb(self.get_result()):
+        while cb(self.get_result()): # cb is a callback function
             for theta, x in dataset:
                 self.optimizer.zero_grad()
                 loss = self.loss(theta, x)
@@ -67,27 +75,32 @@ class Solver(BaseSolver):
                 self.optimizer.step()
 
     def get_result(self):
+        """Returns the input of the `Objective.compute` method.
+        Requires the prior to be set in `Objevtive.set_data`."""
+
         return (
             lambda theta, x: self.nre(theta, x) + self.prior.log_prob(theta),
             lambda x, n: self.sample(x, n),
         )
 
     def sample(self, x: Tensor, n: int) -> Tensor:
-        r"""Samples from the estimated posterior distribution :math`q(\theta | x)`
+        r"""Samples from the estimated posterior distribution :math:`q(\theta | x)`
 
         Args:
-            x: observations.
+            x: observation.
             n: number of samples desired.
 
         Returns:
-            samples from the estimated posterior.
+            samples from the estimated posterior at given observation.
         """
         theta_0 = self.prior.sample((n,))
 
-        def log_p(theta):
+        # log q(theta | x): log probability of the estimated posterior
+        def log_q(theta):
             return self.nre(theta, x) + self.prior.log_prob(theta)
 
-        sampler = lampe.inference.MetropolisHastings(theta_0, log_f=log_p)
-        samples = next(sampler(1024 + 1, burn=1024))  # TODO mettre en params
+        # sample using MCMC
+        sampler = lampe.inference.MetropolisHastings(theta_0, log_f=log_q)
+        samples = next(sampler(1024 + 1, burn=1024))  # TODO: add to parameters
 
         return samples

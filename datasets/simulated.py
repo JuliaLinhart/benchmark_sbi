@@ -6,7 +6,7 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
-    """Dummy dataset."""
+    """Dummy dataset. Required for testing purposes."""
 
     name = "simulated"
     parameters = {
@@ -16,6 +16,8 @@ class Dataset(BaseDataset):
     }
 
     def get_data(self) -> Dict:
+        """Returns the input of the `Objective.set_data` method."""
+
         return dict(
             prior=torch.distributions.MultivariateNormal(
                 torch.zeros(2),

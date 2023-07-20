@@ -26,12 +26,14 @@ def negative_log_lik(
     .. math:: \mathbb{E}_{\theta,x} [ -\log p(\theta | x) ]
 
     Args:
+    -----
         log_prob: A function that computes :math:`\log p(\theta | x)`.
         theta: A batch of parameter-sets :math:`\theta`.
         x : A batch of corresponding observations :math:`x \sim p(x | \theta)`.
 
     Returns:
-        Expected negative log-likelihood over the joint samples :math`(\theta, x)`.
+    --------
+        Expected negative log-likelihood over the joint samples :math:`(\theta, x)`.
     """  # noqa:E501
 
     return -log_prob(theta, x).mean().item()
@@ -41,8 +43,8 @@ def emd(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
 ) -> Tuple[float, float]:
-    r"""Earth mover's distance (EMD) between reference posteriors :math`p(\theta | x_i)`
-    and estimated posteriors :math`q(\theta | x_i)` conditioned on observations
+    r"""Earth mover's distance (EMD) between reference posteriors :math:`p(\theta | x_i)`
+    and estimated posteriors :math:`q(\theta | x_i)` conditioned on observations
     :math:`x_i`.
 
     Args:
@@ -67,8 +69,8 @@ def c2st(
     n_folds: int = 5,
     z_score: bool = True,
 ) -> Tuple[float, float]:
-    r"""Classifier 2-samples test (C2ST) between reference posteriors :math`p(\theta | x_i)`
-    and estimated posteriors :math`q(\theta | x_i)` conditioned on observations
+    r"""Classifier 2-samples test (C2ST) between reference posteriors :math:`p(\theta | x_i)`
+    and estimated posteriors :math:`q(\theta | x_i)` conditioned on observations
     :math:`x_i`.
 
     Implementation taken from Lueckmann et al. (2021).
@@ -104,8 +106,8 @@ def mmd(
     theta_est: List[Tensor],
     z_score: bool = False,
 ) -> Tuple[float, float]:
-    r"""Maximum mean discrepancy (MMD) between reference posteriors :math`p(\theta | x_i)`
-    and estimated posteriors :math`q(\theta | x_i)` conditioned on observations
+    r"""Maximum mean discrepancy (MMD) between reference posteriors :math:`p(\theta | x_i)`
+    and estimated posteriors :math:`q(\theta | x_i)` conditioned on observations
     :math:`x_i`.
 
     Implementation taken from Lueckmann et al. (2021).

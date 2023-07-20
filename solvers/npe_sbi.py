@@ -25,6 +25,8 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "npe_sbi"
+    # parameters that can be called with `self.<>`,
+    # all possible combinations are used in the benchmark.
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
@@ -36,27 +38,35 @@ class Solver(BaseSolver):
 
     @staticmethod
     def get_next(n_iter: int) -> int:
-        # Avoids evaluating metrics at each iteration which is time consuming.
+        """Only evaluate the result every 10 epochs.
+        Evaluating metrics (such as C2ST) at each epoch is time consuming
+        and comes with noisy validation curves.
+        """
+
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
+        """Initializes the solver with the given `parameters`."""
+
         self.theta, self.x, self.prior = theta, x, prior
 
     def run(self, n_iter: int):
-        # Training of the flow.
+        """Training of the NPE."""
+
         estimator = posterior_nn(
             self.flow,
             num_transforms=self.transforms,
             use_random_permutations=False,
             # no z_score, data is normalized in `set_data` (objective)
-            z_score_theta='none',
-            z_score_x='none',
+            z_score_theta="none",
+            z_score_x="none",
         )
 
         npe = SNPE(self.prior, density_estimator=estimator)
         npe.append_simulations(self.theta, self.x)
 
         with dump():
+            # no callback available. Need to retrain from scratch at each iteration.
             self.npe = npe.train(
                 validation_fraction=0.1,
                 max_num_epochs=n_iter + 1,
@@ -65,6 +75,8 @@ class Solver(BaseSolver):
             )
 
     def get_result(self):
+        """Returns the input of the `Objective.compute` method."""
+
         return (
             lambda theta, x: self.npe.log_prob(theta, x),
             lambda x, n: self.npe.sample(n, x[None]).squeeze(0).detach(),
