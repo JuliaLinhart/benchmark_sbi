@@ -46,12 +46,14 @@ class Solver(BaseSolver):
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
-        """Initializes the solver with the given `parameters`."""
+        """Set the data and prior for the NPE."""
 
         self.theta, self.x, self.prior = theta, x, prior
 
     def run(self, n_iter: int):
-        """Training of the NPE."""
+        """Initialization and training of the NPE.
+        As no callback is used, the initialization has to be done here,
+        at each iteration: need to retrain from scratch at each iteration. """
 
         estimator = posterior_nn(
             self.flow,
@@ -66,7 +68,6 @@ class Solver(BaseSolver):
         npe.append_simulations(self.theta, self.x)
 
         with dump():
-            # no callback available. Need to retrain from scratch at each iteration.
             self.npe = npe.train(
                 validation_fraction=0.1,
                 max_num_epochs=n_iter + 1,
