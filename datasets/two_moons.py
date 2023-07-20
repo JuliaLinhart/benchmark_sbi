@@ -8,7 +8,7 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
-    """Two-moons dataset. Taken from the :mod:`sbibm` package."""
+    r"""Two-moons dataset. Taken from the :mod:`sbibm` package."""
 
     name = "two_moons"
     parameters = {
@@ -20,7 +20,7 @@ class Dataset(BaseDataset):
     }
 
     def get_data(self) -> Dict:
-        """Returns the input of the `Objective.set_data` method."""
+        r"""Returns the input of the `Objective.set_data` method."""
 
         with fork():
             torch.manual_seed(self.seed)

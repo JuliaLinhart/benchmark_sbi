@@ -15,20 +15,21 @@ class Objective(BaseObjective):
     Datasets:
         - train/test: parameter-observation pairs from the prior-simulator
             joint distribution :math:`p(\theta, x)=p(\theta)p(x|\theta)`.
-        - reference (optional): observations math:`x_ref` and corresponding samples from
-            the reference posterior :math:`p(\theta|x_ref)` when it is known.
+        - reference (optional): observations math:`x_ref` and corresponding
+            samples from the reference posterior :math:`p(\theta|x_ref)`
+            (if available).
 
     Solvers: amortized SBI algorithms trained on the joint to approximate
         the posterior :math:`p(\theta|x)` for any observation :math:`x`.
 
     Metrics:
-        - expected negative log likelihood (NLL) on test data (stopping criterion)
+        - expected negative log likelihood (NLL) on test (stopping criterion)
             and train datasets.
         - C2ST, EMD, MMD on reference dataset (optional).
     """
 
     name = "sbi: maximum likelihood on test set"
-    parameters = {} # No parameters for this objective.
+    parameters = {}  # No parameters for this objective.
     min_benchopt_version = "1.3"
 
     requirements = [

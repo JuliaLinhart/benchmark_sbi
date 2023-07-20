@@ -12,7 +12,7 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
-    """Simple likelihood complex posterior (SLCP) dataset.
+    r"""Simple likelihood complex posterior (SLCP) dataset.
     Custom implementation as used in https://github.com/francois-rozet/amnre.
     """
 
@@ -73,7 +73,7 @@ class Dataset(BaseDataset):
         return self.likelihood(theta).sample()
 
     def get_data(self) -> Dict:
-        """ Returns the input of the `Objective.set_data` method."""
+        r"""Returns the input of the `Objective.set_data` method."""
 
         with fork():
             torch.manual_seed(self.seed)

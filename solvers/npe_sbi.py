@@ -27,27 +27,25 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "npe_sbi"
-    
     # training is stopped if the objective value does not decrease
     # for more than 10 iterations. No callback available.
     stopping_criterion = SufficientProgressCriterion(
         patience=10,
     )
-
     # parameters that can be called with `self.<>`,
     # all possible combinations are used in the benchmark.
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
     }
-    
+
     requirements = [
         "pip:sbi",
     ]
 
     @staticmethod
     def get_next(n_iter: int) -> int:
-        """Only evaluate the result every 10 epochs.
+        r"""Only evaluate the result every 10 epochs.
         Evaluating metrics (such as C2ST) at each epoch is time consuming
         and comes with noisy validation curves.
         """
@@ -55,14 +53,14 @@ class Solver(BaseSolver):
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
-        """Set the data and prior for the NPE."""
+        r"""Set the data and prior for the NPE."""
 
         self.theta, self.x, self.prior = theta, x, prior
 
     def run(self, n_iter: int):
-        """Initialization and training of the NPE.
+        r"""Initialization and training of the NPE.
         As no callback is used, the initialization has to be done here,
-        at each iteration: need to retrain from scratch at each iteration. """
+        at each iteration: need to retrain from scratch at each iteration."""
 
         def build(theta, x):
             features, context = theta.shape[-1], x.shape[-1]
@@ -111,7 +109,7 @@ class Solver(BaseSolver):
             )
 
     def get_result(self):
-        """Returns the input of the `Objective.compute` method."""
+        r"""Returns the input of the `Objective.compute` method."""
 
         return (
             lambda theta, x: self.npe.log_prob(theta, x),

@@ -26,26 +26,24 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "fmpe_lampe"
-    
     # training is stopped when the objective on the callback
     # does not decrease for over 10 iterations.
     stopping_criterion = SufficientProgressCriterion(
         patience=10, strategy="callback"
     )
-
     # parameters that can be called with `self.<>`,
     # all possible combinations are used in the benchmark.
     parameters = {
         "layers": [3, 5],
     }
-    
+
     requirements = [
         "pip:lampe",
     ]
 
     @staticmethod
     def get_next(n_iter: int) -> int:
-        """Only evaluate the result every 10 epochs.
+        r"""Only evaluate the result every 10 epochs.
         Evaluating metrics (such as C2ST) at each epoch is time consuming
         and comes with noisy validation curves.
         """
@@ -53,7 +51,7 @@ class Solver(BaseSolver):
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
-        """Initializes the solver with the given `parameters`."""
+        r"""Initializes the solver with the given `parameters`."""
 
         self.theta, self.x = theta, x
         self.fmpe = lampe.inference.FMPE(
@@ -67,7 +65,7 @@ class Solver(BaseSolver):
         self.optimizer = torch.optim.Adam(self.fmpe.parameters(), lr=1e-3)
 
     def run(self, cb: Callable):
-        """Training of the FMPE."""
+        r"""Training of the FMPE."""
 
         dataset = lampe.data.JointDataset(
             self.theta,
@@ -76,7 +74,7 @@ class Solver(BaseSolver):
             shuffle=True,
         )
 
-        while cb(self.get_result()): # cb is a callback function
+        while cb(self.get_result()):  # cb is a callback function
             for theta, x in dataset:
                 self.optimizer.zero_grad()
                 loss = self.loss(theta, x)
@@ -84,7 +82,7 @@ class Solver(BaseSolver):
                 self.optimizer.step()
 
     def get_result(self):
-        """Returns the input of the `Objective.compute` method."""
+        r"""Returns the input of the `Objective.compute` method."""
 
         return (
             lambda theta, x: self.fmpe.flow(x).log_prob(theta),
