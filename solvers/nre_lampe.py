@@ -1,4 +1,5 @@
 from benchopt import BaseSolver, safe_import_context
+from benchopt.stopping_criterion import SufficientProgressCriterion
 from benchmark_utils.typing import Distribution, Tensor
 from typing import Callable
 
@@ -24,13 +25,19 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "nre_lampe"
-    stopping_strategy = "callback"
-    # parameters that can be called with `self`,
+    
+    # training is stopped when the objective on the callback
+    # does not decrease for over 10 iterations.
+    stopping_criterion = SufficientProgressCriterion(
+        patience=10, strategy="callback"
+    )
+
+    # parameters that can be called with `self.<>`,
     # all possible combinations are used in the benchmark.
     parameters = {
         "layers": [3, 5],
     }
-
+    
     requirements = [
         "pip:lampe",
     ]

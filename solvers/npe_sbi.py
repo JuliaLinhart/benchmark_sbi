@@ -1,9 +1,11 @@
 from benchopt import BaseSolver, safe_import_context
+from benchopt.stopping_criterion import SufficientProgressCriterion
 from benchmark_utils.typing import Distribution, Tensor
 
 with safe_import_context() as import_ctx:
+    from functools import partial
+    from nflows import transforms, distributions, flows
     from sbi.inference import SNPE
-    from sbi.utils.get_nn_models import posterior_nn
 
     from benchmark_utils.common import dump
 
@@ -25,13 +27,20 @@ class Solver(BaseSolver):
     """  # noqa:E501
 
     name = "npe_sbi"
+    
+    # training is stopped if the objective value does not decrease
+    # for more than 10 iterations. No callback available.
+    stopping_criterion = SufficientProgressCriterion(
+        patience=10,
+    )
+
     # parameters that can be called with `self.<>`,
     # all possible combinations are used in the benchmark.
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
     }
-
+    
     requirements = [
         "pip:sbi",
     ]
@@ -55,22 +64,48 @@ class Solver(BaseSolver):
         As no callback is used, the initialization has to be done here,
         at each iteration: need to retrain from scratch at each iteration. """
 
-        estimator = posterior_nn(
-            self.flow,
-            num_transforms=self.transforms,
-            use_random_permutations=False,
-            # no z_score, data is normalized in `set_data` (objective)
-            z_score_theta="none",
-            z_score_x="none",
-        )
+        def build(theta, x):
+            features, context = theta.shape[-1], x.shape[-1]
 
-        npe = SNPE(self.prior, density_estimator=estimator)
+            if self.flow == "maf":
+                MAT = partial(
+                    transforms.MaskedAffineAutoregressiveTransform,
+                    features=features,
+                    context_features=context,
+                    hidden_features=64,
+                    num_blocks=2,
+                    use_residual_blocks=False,
+                )
+            elif self.flow == "nsf":
+                MAT = partial(
+                    transforms.MaskedPiecewiseRationalQuadraticAutoregressiveTransform,  # noqa:E501
+                    features=features,
+                    context_features=context,
+                    hidden_features=64,
+                    num_blocks=2,
+                    use_residual_blocks=False,
+                    tails="linear",
+                    tail_bound=5.0,
+                )
+
+            ts = []
+
+            for _ in range(self.transforms):
+                ts.extend([MAT(), transforms.ReversePermutation(features)])
+
+            transform = transforms.CompositeTransform(ts)
+            base = distributions.StandardNormal(shape=[features])
+
+            return flows.Flow(transform=transform, distribution=base)
+
+        npe = SNPE(self.prior, density_estimator=build)
         npe.append_simulations(self.theta, self.x)
 
         with dump():
             self.npe = npe.train(
-                validation_fraction=0.1,
+                validation_fraction=1 / len(self.theta),
                 max_num_epochs=n_iter + 1,
+                stop_after_epochs=n_iter + 1,
                 training_batch_size=128,
                 learning_rate=1e-3,
             )
