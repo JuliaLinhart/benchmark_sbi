@@ -36,15 +36,15 @@ Everyone is welcome to contribute by adding datasets, solvers (algorithms) or me
 
 * Datasets represent different prior-simulator pairs that define a joint distribution $p(\\theta, x) = p(\\theta) p(x \\mid \\theta)$. The data they are expected to return (``Dataset.get_data``) consist in a set of training parameters-observation pairs $(\\theta, x)$, a set of testing parameters-observation pairs $(\\theta, x)$ and and a set of reference posterior-observation pairs $(p(\\theta \\mid x), x)$.
 
-	To add a dataset, add a file in the `datasets` folder.
+	To add a dataset, add a file in the ``datasets`` folder.
 
 * Solvers represent different amortized SBI algorithms (NRE, NPE, FMPE, ...) or different implementations (``sbi``, ``lampe``, ...) of such algorithms. They are initialized (``Solver.set_objective``) with the training pairs and the prior $p(\\theta)$. After training (``Solver.run``), they are expected to return (``Solver.get_result``) a pair of functions ``log_prob`` and ``sample`` that evaluate the posterior log-density $\\log q_{\\phi}(\\theta \\mid x)$ and generate parameters $\\theta \\sim q_{\\phi}(\\theta \\mid x)$, respectively.
 
-	To add a solver, add a file in the `solvers` folder.
+	To add a solver, add a file in the ``solvers`` folder.
 
 * Metrics evaluate the quality of the estimated posterior obtained from the solver. The main objective is the expected negative log-likelihood $\\mathbb{E}_{p(\\theta, x)} [ - \\log q_{\\phi}(\\theta \\mid x) ]$ over the test set. Other metrics such as the C2ST and EMD scores are computed (``Objective.compute``) using the reference posteriors (if available).
 
-	To add a metric, implement it in the `benmark_utils.metrics.py` file.
+	To add a metric, implement it in the ``benchmark_utils.metrics.py`` file.
 
 .. |Build Status| image:: https://github.com/JuliaLinhart/benchmark_sbi/workflows/Tests/badge.svg
    :target: https://github.com/JuliaLinhart/benchmark_sbi/actions
