@@ -51,6 +51,7 @@ class Solver(BaseSolver):
             x.shape[-1],
             build=build,
             transforms=self.transforms,
+            hidden_features=(64, 64),
         )
 
         self.loss = lampe.inference.NPELoss(self.npe)
