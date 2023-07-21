@@ -88,10 +88,10 @@ class Objective(BaseObjective):
         self.mean_x, self.std_x = x_train.mean(dim=0), x_train.std(dim=0)
 
         # Normalize and set train and test data.
-        self.theta_train = (theta_train - mean_theta) / std_theta
-        self.x_train = (x_train - mean_x) / std_x
-        self.theta_test = (theta_test - mean_theta) / std_theta
-        self.x_test = (x_test - mean_x) / std_x
+        self.theta_train = (theta_train - self.mean_theta) / self.std_theta
+        self.x_train = (x_train - self.mean_x) / self.std_x
+        self.theta_test = (theta_test - self.mean_theta) / self.std_theta
+        self.x_test = (x_test - self.mean_x) / self.std_x
 
         # Normalize and set reference data.
         if theta_ref is None:
