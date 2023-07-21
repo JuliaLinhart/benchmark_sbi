@@ -1,3 +1,5 @@
+r"""Objective module."""
+
 from benchopt import BaseObjective, safe_import_context
 from benchmark_utils.typing import Distribution, Tensor
 from typing import Callable, List, Tuple
@@ -10,7 +12,7 @@ with safe_import_context() as import_ctx:
 
 
 class Objective(BaseObjective):
-    r"""Benchmarks amortized simulation-based inference (SBI) algorithms.
+    r"""Benchmark amortized simulation-based inference (SBI) algorithms.
 
     Datasets:
         - train/test: parameter-observation pairs from the prior-simulator
@@ -48,30 +50,34 @@ class Objective(BaseObjective):
         theta_ref: List[Tensor] = None,
         x_ref: Tensor = None,
     ):
-        r"""Sets the data. Input Args are the output of `Dataset.get_data`.
+        r"""Set the data.
 
-        Args:
-        -----
-        prior (Distribution): required by some solvers (NRE) to define the
-                `sample` and `log_prob` functions.
-        theta_train (Tensor): parameters generated from the prior.
-            Of shape (train_size, dim_theta).
-        x_train (Tensor): observations generated via the simulator
-            for each parameter in `theta_train`.
-            Of shape (train_size, dim_x).
-        theta_test (Tensor): parameters generated from the prior.
-            Of shape (test_size, dim_theta).
-        x_test (Tensor): observations generated from the simulator
-            for each parameter in `theta_test`.
-            Of shape (test_size, dim_x).
-        theta_ref (List[Tensor], optional): reference posterior samples
-            for every fixed observation `x_ref`. Defaults to None.
-            Of shape [(n_per_ref, dim_theta)] * n_ref.
-        x_ref (Tensor, optional): (small) set of observations for which
-            the reference posterior is known. Defaults to None.
-            Of shape (n_ref, dim_x).
+        Input parameters are the output of `Dataset.get_data`.
+
+        Parameters
+        ----------
+        prior: Distribution
+            prior over simulator parameters
+            required by some solvers (NRE) to compute the `result` functions
+        theta_train: Tensor
+            parameters generated from the prior
+            of shape (train_size, dim_theta)
+        x_train: Tensor
+            observations generated via the simulator for each parameter in `theta_train`
+            of shape (train_size, dim_x)
+        theta_test: Tensor
+            parameters generated from the prior
+            of shape (test_size, dim_theta)
+        x_test: Tensor
+            observations generated from the simulator for each parameter in `theta_test`
+            of shape (test_size, dim_x)
+        theta_ref: List[Tensor], optional
+            reference posterior samples for every observation `x_ref`, by defaut None
+            of shape [(n_per_ref, dim_theta)] * n_ref
+        x_ref: Tensor, optional
+            set of observations for which the reference posterior is known, by default None.
+            of shape (n_ref, dim_x)
         """
-
         # Set prior
         self.prior = prior
 
@@ -102,26 +108,27 @@ class Objective(BaseObjective):
             Callable[[Tensor, int], Tensor],
         ],
     ):
-        r"""Computes the metrics. Input Arg is the output of `Solver.get_result`.
+        """Compute the metrics.
 
-        Args:
-        -----
-        result: tuple of the `log_prob` and `sample` functions of the solver.
-            - log_prob (Callable[[Tensor, Tensor], Tensor]): computes the
-                log probabilities of the approximate posterior
+        Input parameters are the output of `Solver.get_result`.
+
+        Parameters
+        ----------
+        result : Tuple[ Callable[[Tensor, Tensor], Tensor], Callable[[Tensor, int], Tensor], ]
+            - log_prob: computes the log probabilities of the approximate posterior
                 for a given batch of observations and parameters.
                 Returns a tensor of shape (batch_size,).
-            - sample (Callable[[Tensor, int], Tensor]): samples from
-                the approximate posterior for a given observation and sample size.
-                Returns a tensor `theta_est` of shape (n:int, dim_theta).
+            - sample: samples from the approximate posterior for a given observation
+                and sample size. Returns a tensor `theta_est` of shape
 
-        Returns:
-        --------
-        dict: dictionary of metrics.
-            - value: metric used as stopping criterion (NLL on test data)
-            - any other metric computed ...
+        Returns
+        -------
+        Dict
+            dictionary of computed metrics
+                - value: metric used as stopping criterion (NLL on test data)
+                - any other metric computed ...
+
         """  # noqa:E501
-
         # Get result: `log_prob`` and `sample` functions from the solver.
         log_prob, sample = result
 
@@ -164,23 +171,25 @@ class Objective(BaseObjective):
         )
 
     def get_one_solution(self):
-        r"""Function that returns the same type of output as `Solver.get_result`
-        but for testing purposes only.
-        """  # noqa:E501
+        r"""Return the same type of output as `Solver.get_result`.
 
+        For testing purposes only.
+        """  # noqa:E501
         return (
             lambda theta, x: torch.zeros(theta.shape[0]),
             lambda x, n: torch.randn(n, self.theta_train.shape[-1]),
         )
 
     def get_objective(self):
-        r"""Information to pass to the solvers where it is used to compute the result:
-        `log_prob` and `sample` functions of the trained SBI algorithm.
+        r"""Information to pass to the solvers.
 
-        Returns:
-        --------
-        dict: contains training data and prior required by some solvers (NRE)
+        This information is used by the solvers to compute the result
+        (`log_prob` and `sample` functions of the trained SBI algorithm).
+
+        Returns
+        -------
+        Dict
+            contains training data and prior required by some solvers (NRE)
             to compute the result: `log_prob` and `sample` functions.
         """  # noqa:E501
-
         return dict(theta=self.theta_train, x=self.x_train, prior=self.prior)

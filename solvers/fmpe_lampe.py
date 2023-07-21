@@ -1,3 +1,13 @@
+r"""Solver module for FMPE, :mod:`lampe` implementation.
+
+References
+----------
+    [1] Flow Matching for Generative Modeling (Lipman et al., 2023)
+        https://arxiv.org/abs/2210.02747
+    [2] Flow Matching for Scalable Simulation-Based Inference (Dax et al., 2023)
+        https://arxiv.org/abs/2305.17161
+"""
+
 from benchopt import BaseSolver, safe_import_context
 from benchopt.stopping_criterion import SufficientProgressCriterion
 from benchmark_utils.typing import Distribution, Tensor
@@ -10,19 +20,13 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
-    r"""Flow matching posterior estimator estimator (FMPE) solver implemented
-    with the :mod:`lampe` package.
+    r"""Flow matching posterior estimator (FMPE) [1,2].
 
     The solver trains a regression network to approximate a vector field inducing a
     time-continuous normalizing flow between the posterior distribution and a standard
     Gaussian distribution.
 
-    References:
-        | Flow Matching for Generative Modeling (Lipman et al., 2023)
-        | https://arxiv.org/abs/2210.02747
-
-        | Flow Matching for Scalable Simulation-Based Inference (Dax et al., 2023)
-        | https://arxiv.org/abs/2305.17161
+    Implemented with the :mod:`lampe` package.
     """  # noqa:E501
 
     name = "fmpe_lampe"
@@ -43,16 +47,15 @@ class Solver(BaseSolver):
 
     @staticmethod
     def get_next(n_iter: int) -> int:
-        r"""Only evaluate the result every 10 epochs.
-        Evaluating metrics (such as C2ST) at each epoch is time consuming
-        and comes with noisy validation curves.
-        """
+        r"""Evaluate the result every 10 epochs.
 
+        Evaluating metrics (such as C2ST) at each epoch is time consuming
+        and comes with noisy validation curves (1 iteration = 10 epochs).
+        """
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
-        r"""Initializes the solver with the given `parameters`."""
-
+        r"""Initialize the solver with the given `parameters`."""
         self.theta, self.x = theta, x
         self.fmpe = lampe.inference.FMPE(
             theta.shape[-1],
@@ -65,8 +68,7 @@ class Solver(BaseSolver):
         self.optimizer = torch.optim.Adam(self.fmpe.parameters(), lr=1e-3)
 
     def run(self, cb: Callable):
-        r"""Training of the FMPE."""
-
+        r"""Train the FMPE for one iteration."""
         dataset = lampe.data.JointDataset(
             self.theta,
             self.x,
@@ -82,8 +84,10 @@ class Solver(BaseSolver):
                 self.optimizer.step()
 
     def get_result(self):
-        r"""Returns the input of the `Objective.compute` method."""
+        r"""Define the estimator's log-prob function and sampler.
 
+        Returns the input of the `Objective.compute` method.
+        """
         return (
             lambda theta, x: self.fmpe.flow(x).log_prob(theta),
             lambda x, n: self.fmpe.flow(x).sample((n,)),

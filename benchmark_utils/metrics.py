@@ -1,9 +1,15 @@
-r"""Objective and metrics."""
+r"""Objective and metrics.
+
+References
+----------
+    [1] Benchmarking Simulation-Based Inference (Lueckmann et al. (2021))
+        https://arxiv.org/abs/2101.04653
+"""
 
 import numpy as np
 import ot
 import pyro
-import sbibm.metrics as metrics
+import sbibm
 import torch
 
 from torch import Tensor
@@ -19,23 +25,27 @@ def negative_log_lik(
     theta: Tensor,
     x: Tensor,
 ) -> float:
-    r"""Expected negative log-likelihood :math:`\log p(\theta | x)` of a given set of
-    parameters :math:`\theta` conditionned on the observation :math:`x`. Expectation is
-    taken over the joint distribution :math:`p(\theta, x)`:
+    r"""Compute the expected negative log-likelihood (NLL) of an estimator q.
 
-    .. math:: \mathbb{E}_{\theta,x} [ -\log p(\theta | x) ]
+    .. math:: \mathbb{E}_{p(\theta,x)} [ -\log q(\theta | x) ]
 
-    Args:
-    -----
-        log_prob: A function that computes :math:`\log p(\theta | x)`.
-        theta: A batch of parameter-sets :math:`\theta`.
-        x : A batch of corresponding observations :math:`x \sim p(x | \theta)`.
+    This quantity is approximated via Monte Carlo by taking the average over
+    i.i.d. samples from the true joint distribution :math:`p(\theta, x)`.
 
-    Returns:
-    --------
+    Parameters
+    ----------
+    log_prob : Callable[[Tensor, Tensor], Tensor]
+        A function that computes :math:`\log q(\theta | x)`.
+    theta : Tensor
+        A batch of parameter sets :math:`\theta`.
+    x : Tensor
+        A batch of corresponding observations :math:`x \sim p(x | \theta)`.
+
+    Returns
+    -------
+    float
         Expected negative log-likelihood over the joint samples :math:`(\theta, x)`.
     """  # noqa:E501
-
     return -log_prob(theta, x).mean().item()
 
 
@@ -43,18 +53,24 @@ def emd(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
 ) -> Tuple[float, float]:
-    r"""Earth mover's distance (EMD) between reference posteriors :math:`p(\theta | x_i)`
-    and estimated posteriors :math:`q(\theta | x_i)` conditioned on observations
-    :math:`x_i`.
+    r"""Compute Earth mover's distance (EMD) between reference (p) and estimator (q).
 
-    Args:
-        theta_ref: A list of reference posterior samples.
-        theta_est: A list of estimated posterior samples.
+    Mean and std over different conditionning observations :math:`x_ref` for which
+    samples :mod:`theta_ref` from :math:`p(\theta | x_ref)` and :mod:`theta_est`
+    from :math:`q(\theta | x_ref)` are available.
 
-    Returns:
+    Parameters
+    ----------
+    theta_ref : List[Tensor]
+        A list of reference posterior samples.
+    theta_est : List[Tensor]
+        A list of estimated posterior samples.
+
+    Returns
+    -------
+    Tuple[float, float]
         The mean and standard deviation of the EMD.
     """  # noqa:E501
-
     emd_scores = [
         ot.emd2(P.new_tensor(()), Q.new_tensor(()), torch.cdist(P, Q)).item()
         for P, Q in zip(theta_ref, theta_est)
@@ -67,32 +83,39 @@ def c2st(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
     n_folds: int = 5,
-    z_score: bool = True,
 ) -> Tuple[float, float]:
-    r"""Classifier 2-samples test (C2ST) between reference posteriors :math:`p(\theta | x_i)`
-    and estimated posteriors :math:`q(\theta | x_i)` conditioned on observations
-    :math:`x_i`.
+    r"""Compute Classifier 2-Samples Test (C2ST) between reference (p) and estimator (q).
 
-    Implementation taken from Lueckmann et al. (2021).
+    Mean and std over different conditionning observations :math:`x_ref` for which
+    samples :mod:`theta_ref` from :math:`p(\theta | x_ref)` and :mod:`theta_est`
+    from :math:`q(\theta | x_ref)` are available.
 
-    Args:
-        theta_ref: A list of reference posterior samples.
-        theta_est: A list of estimated posterior samples.
-        n_folds: The number of cross-validation folds.
-        z_score: Whether to normalize the data before training the classifier.
+    C2ST-scores are computed using a MLP-classifier with 5-fold cross-validation.
+    Implementation taken from Lueckmann et al. (2021) [1].
 
-    Returns:
-        The mean and standard deviation of the C2ST scores
+    Parameters
+    ----------
+    theta_ref : List[Tensor]
+        A list of reference posterior samples.
+    theta_est : List[Tensor]
+        A list of estimated posterior samples.
+    n_folds : int, optional
+        The number of cross-validation folds, by default 5.
 
-    References:
-        | Benchmarking Simulation-Based Inference (Lueckmann et al., 2021)
-        | https://arxiv.org/abs/2101.04653
+    Returns
+    -------
+    Tuple[float, float]
+         The mean and standard deviation of the C2ST scores
     """  # noqa:E501
-
     print()
 
     c2st_scores = [
-        metrics.c2st(X=P, Y=Q, z_score=z_score, n_folds=n_folds).item()
+        sbibm.metrics.c2st(
+            X=P,
+            Y=Q,
+            z_score=False,  # no z_score: data already normalized (Objective.set_data)
+            n_folds=n_folds,
+        ).item()
         for P, Q in tqdm(
             zip(theta_ref, theta_est), desc="C2ST"
         )  # TODO: hide progress bar between runs (or n_iter)
@@ -106,27 +129,30 @@ def mmd(
     theta_est: List[Tensor],
     z_score: bool = False,
 ) -> Tuple[float, float]:
-    r"""Maximum mean discrepancy (MMD) between reference posteriors :math:`p(\theta | x_i)`
-    and estimated posteriors :math:`q(\theta | x_i)` conditioned on observations
-    :math:`x_i`.
+    r"""Compute Maximum Mean Discrepancy (MMD) between reference (p) and estimator (q).
 
-    Implementation taken from Lueckmann et al. (2021).
+    Mean and std over different conditionning observations :math:`x_ref` for which
+    samples :mod:`theta_ref` from :math:`p(\theta | x_ref)` and :mod:`theta_est`
+    from :math:`q(\theta | x_ref)` are available.
 
-    Args:
-        theta_ref: A list of reference posterior samples.
-        theta_est: A list of estimated posterior samples.
-        z_score: Whether to normalize the data before computing the MMD.
+    Implementation taken from Lueckmann et al. (2021) [1].
 
-    Returns:
+    Parameters
+    ----------
+        theta_ref: List[Tensor]
+            A list of reference posterior samples.
+        theta_est: List[Tensor]
+            A list of estimated posterior samples.
+        z_score: bool, optional
+            Whether to normalize the data before computing the MMD.
+
+    Returns
+    -------
+    Tuple[float, float]
         The mean and standard deviation of the MMD.
-
-    References:
-        | Benchmarking Simulation-Based Inference (Lueckmann et al., 2021)
-        | https://arxiv.org/abs/2101.04653
     """  # noqa:E501
-
     mmd_scores = [
-        metrics.mmd(X=P, Y=Q, z_score=z_score).item()
+        sbibm.metrics.mmd(X=P, Y=Q, z_score=z_score).item()
         for P, Q in zip(theta_ref, theta_est)
     ]
 
