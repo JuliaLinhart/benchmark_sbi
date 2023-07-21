@@ -51,7 +51,7 @@ class Solver(BaseSolver):
 
         Evaluating metrics (such as C2ST) at each epoch is time consuming
         and comes with noisy validation curves (1 iteration = 10 epochs).
-        """
+        """  # noqa:E501
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
@@ -87,7 +87,7 @@ class Solver(BaseSolver):
         r"""Define the estimator's log-prob function and sampler.
 
         Returns the input of the `Objective.compute` method.
-        """
+        """  # noqa:E501
         return (
             lambda theta, x: self.fmpe.flow(x).log_prob(theta),
             lambda x, n: self.fmpe.flow(x).sample((n,)),

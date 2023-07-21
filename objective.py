@@ -28,7 +28,7 @@ class Objective(BaseObjective):
         - expected negative log likelihood (NLL) on test (stopping criterion)
             and train datasets.
         - C2ST, EMD, MMD on reference dataset (optional).
-    """
+    """  # noqa: E501
 
     name = "sbi: maximum likelihood on test set"
     parameters = {}  # No parameters for this objective.
@@ -77,7 +77,7 @@ class Objective(BaseObjective):
         x_ref: Tensor, optional
             set of observations for which the reference posterior is known, by default None.
             of shape (n_ref, dim_x)
-        """
+        """  # noqa: E501
         # Set prior
         self.prior = prior
 
