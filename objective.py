@@ -34,25 +34,25 @@ class Objective(BaseObjective):
         x_ref: Tensor = None,
     ):
         # Standardize data and prior
-        theta_mean, theta_std = theta_train.mean(dim=0), theta_train.std(dim=0)
-        x_mean, x_std = x_train.mean(dim=0), x_train.std(dim=0)
+        mean_theta, std_theta = theta_train.mean(dim=0), theta_train.std(dim=0)
+        mean_x, std_x = x_train.mean(dim=0), x_train.std(dim=0)
 
-        transform_theta = AffineTransform(-theta_mean / theta_std, 1 / theta_std)
-        transform_x = AffineTransform(-x_mean / x_std, 1 / x_std)
+        t_theta = AffineTransform(-mean_theta / std_theta, 1 / std_theta)
+        t_x = AffineTransform(-mean_x / std_x, 1 / std_x)
 
-        self.theta_train = transform_theta(theta_train)
-        self.x_train = transform_x(x_train)
-        self.theta_test = transform_theta(theta_test)
-        self.x_test = transform_x(x_test)
+        self.theta_train = t_theta(theta_train)
+        self.x_train = t_x(x_train)
+        self.theta_test = t_theta(theta_test)
+        self.x_test = t_x(x_test)
 
         if theta_ref is None:
             self.x_ref = None
             self.theta_ref = None
         else:
-            self.theta_ref = [transform_theta(theta) for theta in theta_ref]
-            self.x_ref = transform_x(x_ref)
+            self.theta_ref = [t_theta(theta) for theta in theta_ref]
+            self.x_ref = t_x(x_ref)
 
-        self.prior = TransformedDistribution(prior, transform_theta)
+        self.prior = TransformedDistribution(prior, t_theta)
 
     def compute(
         self,
