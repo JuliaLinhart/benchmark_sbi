@@ -6,8 +6,7 @@ References
         (Cranmer et al., 2015), https://arxiv.org/abs/1506.02169
     [2] Likelihood-free MCMC with Amortized Approximate Ratio Estimators
         (Hermans et al., 2019), https://arxiv.org/abs/1903.04057
-
-"""
+"""  # noqa:E501
 
 from benchopt import BaseSolver, safe_import_context
 from benchopt.stopping_criterion import SufficientProgressCriterion
