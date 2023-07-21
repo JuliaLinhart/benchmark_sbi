@@ -82,7 +82,9 @@ class Objective(BaseObjective):
         self.prior = prior
 
         # Get mean and std from train set for data normalization.
-        self.mean_theta, self.std_theta = theta_train.mean(dim=0), theta_train.std(dim=0)
+        self.mean_theta, self.std_theta = theta_train.mean(
+            dim=0
+        ), theta_train.std(dim=0)
         self.mean_x, self.std_x = x_train.mean(dim=0), x_train.std(dim=0)
 
         # Normalize and set train and test data.
@@ -98,7 +100,8 @@ class Objective(BaseObjective):
         else:
             self.x_ref = (x_ref - self.mean_x) / self.std_x
             self.theta_ref = [
-                (theta - self.mean_theta) / self.std_theta for theta in theta_ref
+                (theta - self.mean_theta) / self.std_theta
+                for theta in theta_ref
             ]
 
     def compute(
@@ -154,7 +157,8 @@ class Objective(BaseObjective):
 
             # Normalize samples.
             theta_est = [
-                (theta - self.mean_theta) / self.std_theta for theta in theta_est
+                (theta - self.mean_theta) / self.std_theta
+                for theta in theta_est
             ]
 
             # Compute metrics.
