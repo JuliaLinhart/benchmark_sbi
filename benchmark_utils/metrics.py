@@ -9,7 +9,7 @@ References
 import numpy as np
 import ot
 import pyro
-import sbibm
+from sbibm import metrics as sbibm_metrics
 import torch
 
 from torch import Tensor
@@ -83,6 +83,7 @@ def c2st(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
     n_folds: int = 5,
+    z_score: bool = False,
 ) -> Tuple[float, float]:
     r"""Compute Classifier 2-Samples Test (C2ST) between reference (p) and estimator (q).
 
@@ -101,6 +102,9 @@ def c2st(
         A list of estimated posterior samples.
     n_folds : int, optional
         The number of cross-validation folds, by default 5.
+    z_score : bool, optional
+        Whether to normalize the data before computing the C2ST, by default False.
+        (data already normalized in Objective.set_data)
 
     Returns
     -------
@@ -110,11 +114,10 @@ def c2st(
     print()
 
     c2st_scores = [
-        sbibm.metrics.c2st(
+        sbibm_metrics.c2st(
             X=P,
             Y=Q,
-            # no z_score: data already normalized (Objective.set_data)
-            z_score=False,
+            z_score=z_score,
             n_folds=n_folds,
         ).item()
         for P, Q in tqdm(
@@ -153,7 +156,7 @@ def mmd(
         The mean and standard deviation of the MMD.
     """  # noqa:E501
     mmd_scores = [
-        sbibm.metrics.mmd(X=P, Y=Q, z_score=z_score).item()
+        sbibm_metrics.mmd(X=P, Y=Q, z_score=z_score).item()
         for P, Q in zip(theta_ref, theta_est)
     ]
 
