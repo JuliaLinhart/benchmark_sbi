@@ -113,7 +113,8 @@ def c2st(
         sbibm.metrics.c2st(
             X=P,
             Y=Q,
-            z_score=False,  # no z_score: data already normalized (Objective.set_data)
+            # no z_score: data already normalized (Objective.set_data)
+            z_score=False,
             n_folds=n_folds,
         ).item()
         for P, Q in tqdm(
