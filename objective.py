@@ -155,12 +155,6 @@ class Objective(BaseObjective):
             theta_est = [sample(x, n) for x, n in zip(self.x_ref, n_ref)]
             end = time.perf_counter()
 
-            # Normalize samples.
-            theta_est = [
-                (theta - self.mean_theta) / self.std_theta
-                for theta in theta_est
-            ]
-
             # Compute metrics.
             c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
             emd_mean, emd_std = emd(self.theta_ref, theta_est)
