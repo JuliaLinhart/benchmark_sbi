@@ -9,6 +9,7 @@ with safe_import_context() as import_ctx:
     import torch
 
     from benchmark_utils.metrics import negative_log_lik, c2st, emd, mmd
+    from torch.distributions import AffineTransform, TransformedDistribution
 
 
 class Objective(BaseObjective):
@@ -78,28 +79,27 @@ class Objective(BaseObjective):
             set of observations for which the reference posterior is known, by default None.
             of shape (n_ref, dim_x)
         """  # noqa: E501
-        # Set prior
-        self.prior = prior
 
-        # Get mean and std from train set for data normalization.
+        # Standardize data and prior
         mean_theta, std_theta = theta_train.mean(dim=0), theta_train.std(dim=0)
         mean_x, std_x = x_train.mean(dim=0), x_train.std(dim=0)
 
-        # Normalize and set train and test data.
-        self.theta_train = (theta_train - mean_theta) / std_theta
-        self.x_train = (x_train - mean_x) / std_x
-        self.theta_test = (theta_test - mean_theta) / std_theta
-        self.x_test = (x_test - mean_x) / std_x
+        t_theta = AffineTransform(-mean_theta / std_theta, 1 / std_theta)
+        t_x = AffineTransform(-mean_x / std_x, 1 / std_x)
 
-        # Normalize and set reference data.
+        self.theta_train = t_theta(theta_train)
+        self.x_train = t_x(x_train)
+        self.theta_test = t_theta(theta_test)
+        self.x_test = t_x(x_test)
+
         if theta_ref is None:
-            self.x_ref = x_ref
-            self.theta_ref = theta_ref
+            self.x_ref = None
+            self.theta_ref = None
         else:
-            self.x_ref = (x_ref - mean_x) / std_x
-            self.theta_ref = [
-                (theta - mean_theta) / std_theta for theta in theta_ref
-            ]
+            self.theta_ref = [t_theta(theta) for theta in theta_ref]
+            self.x_ref = t_x(x_ref)
+
+        self.prior = TransformedDistribution(prior, t_theta)
 
     def compute(
         self,
