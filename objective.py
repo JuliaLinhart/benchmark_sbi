@@ -50,8 +50,7 @@ class Objective(BaseObjective):
         else:
             self.x_ref = (x_ref - mean_x) / std_x
             self.theta_ref = [
-                (theta - mean_theta) / std_theta
-                for theta in theta_ref
+                (theta - mean_theta) / std_theta for theta in theta_ref
             ]
 
     def compute(
