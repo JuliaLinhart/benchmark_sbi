@@ -12,7 +12,7 @@ class Dataset(BaseDataset):
 
     name = "simulated"
     # parameters that can be called with `self.<>`,
-    # all possible combinations are used in the benchmark.
+    # all possible combinations are used in the benchmark
     parameters = {
         "train_size": [1024],
         "test_size": [256],

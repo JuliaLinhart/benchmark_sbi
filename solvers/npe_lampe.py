@@ -32,12 +32,12 @@ class Solver(BaseSolver):
 
     name = "npe_lampe"
     # training is stopped when the objective on the callback
-    # does not decrease for over 10 iterations.
+    # does not decrease for over 10 iterations
     stopping_criterion = SufficientProgressCriterion(
         patience=10, strategy="callback"
     )
     # parameters that can be called with `self.<>`,
-    # all possible combinations are used in the benchmark.
+    # all possible combinations are used in the benchmark
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
