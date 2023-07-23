@@ -1,3 +1,14 @@
+r"""Solver module for NPE, :mod:`lampe` implementation.
+
+References
+----------
+    [1] Fast :math:`\espilon`-free Inference of Simulation Models with
+        Bayesian Conditional Density Estimation (Papamakarios et al., 2016),
+        https://arxiv.org/abs/1605.06376
+    [2] Automatic posterior transformation for likelihood-free inference
+        (Greenberg et al., 2019), https://arxiv.org/abs/1905.07488
+"""
+
 from benchopt import BaseSolver, safe_import_context
 from benchopt.stopping_criterion import SufficientProgressCriterion
 from benchmark_utils.typing import Distribution, Tensor
@@ -10,38 +21,43 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
-    r"""Neural posterior estimation (NPE) solver implemented with the
-    :mod:`lampe` package.
+    r"""Neural posterior estimation (NPE) [1,2].
 
     The solver trains a parametric conditional distribution :math:`q_\phi(\theta | x)`
     to approximate the posterior distribution :math:`p(\theta | x)` of parameters given
     observations.
 
-    References:
-        | Fast :math:`\espilon`-free Inference of Simulation Models with Bayesian Conditional Density Estimation (Papamakarios et al., 2016)
-        | https://arxiv.org/abs/1605.06376
-
-        | Automatic posterior transformation for likelihood-free inference (Greenberg et al., 2019)
-        | https://arxiv.org/abs/1905.07488
+    Implementated with the :mod:`lampe` package.
     """  # noqa:E501
 
     name = "npe_lampe"
+    # training is stopped when the objective on the callback
+    # does not decrease for over 10 iterations.
     stopping_criterion = SufficientProgressCriterion(
         patience=10, strategy="callback"
     )
+    # parameters that can be called with `self.<>`,
+    # all possible combinations are used in the benchmark.
     parameters = {
         "flow": ["maf", "nsf"],
         "transforms": [1, 3, 5],
     }
+
     requirements = [
         "pip:lampe",
     ]
 
     @staticmethod
     def get_next(n_iter: int) -> int:
+        r"""Evaluate the result every 10 epochs.
+
+        Evaluating metrics (such as C2ST) at each epoch is time consuming
+        and comes with noisy validation curves (1 iteration = 10 epochs).
+        """
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
+        r"""Initialize the solver with the given `parameters`."""
         self.theta, self.x = theta, x
 
         build = zuko.flows.MAF if self.flow == "maf" else zuko.flows.NSF
@@ -58,6 +74,7 @@ class Solver(BaseSolver):
         self.optimizer = torch.optim.Adam(self.npe.parameters(), lr=1e-3)
 
     def run(self, cb: Callable):
+        r"""Train the NPE for one iteration."""
         dataset = lampe.data.JointDataset(
             self.theta,
             self.x,
@@ -65,7 +82,7 @@ class Solver(BaseSolver):
             shuffle=True,
         )
 
-        while cb(self.get_result()):
+        while cb(self.get_result()):  # cb is a callback function
             for theta, x in dataset:
                 self.optimizer.zero_grad()
                 loss = self.loss(theta, x)
@@ -73,6 +90,10 @@ class Solver(BaseSolver):
                 self.optimizer.step()
 
     def get_result(self):
+        r"""Define the estimator's log-prob function and sampler.
+
+        Returns the input of the `Objective.compute` method.
+        """
         return (
             lambda theta, x: self.npe.flow(x).log_prob(theta),
             lambda x, n: self.npe.flow(x).sample((n,)),

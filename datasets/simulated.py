@@ -1,3 +1,5 @@
+r"""Dataset module for the simulated dataset."""
+
 from benchopt import BaseDataset, safe_import_context
 from typing import Dict
 
@@ -6,9 +8,11 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
-    """Dummy dataset."""
+    """Dummy dataset. Required for testing purposes."""
 
     name = "simulated"
+    # parameters that can be called with `self.<>`,
+    # all possible combinations are used in the benchmark.
     parameters = {
         "train_size": [1024],
         "test_size": [256],
@@ -16,6 +20,10 @@ class Dataset(BaseDataset):
     }
 
     def get_data(self) -> Dict:
+        r"""Generate Data.
+
+        Returns the input of the `Objective.set_data` method.
+        """
         return dict(
             prior=torch.distributions.MultivariateNormal(
                 torch.zeros(2),

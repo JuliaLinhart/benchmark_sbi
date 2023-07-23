@@ -15,10 +15,7 @@ pyro.distributions.enable_validation(False)
 
 @contextmanager
 def fork():
-    """Context manager which resets the torch random seed to its previous
-    state when exiting.
-    """
-
+    """Reset the torch random seed to its previous state when exiting."""  # noqa:E501
     try:
         state = torch.random.get_rng_state()
         yield
@@ -28,10 +25,7 @@ def fork():
 
 @contextmanager
 def dump():
-    """Context manager which dumps the standard outputs (stdout) and
-    standard errors (stderr).
-    """
-
+    """Dump the standard outputs (stdout) and standard errors (stderr)."""  # noqa:E501
     with StringIO() as f:
         with redirect_stdout(f), redirect_stderr(f):
             try:
@@ -47,21 +41,27 @@ def data_generator_sbibm(
     ref_size: int = 0,
     n_per_ref: int = 1024,
 ) -> Dict:
-    r"""Generates training, test and reference sets for a task of the :mod:`sbibm`
-    package.
+    r"""Generate training, test and reference sets for a :mod:`sbibm` task.
 
-    Args:
-        name: A task name (e.g. `'two_moons'`).
-        train_size: The number of samples in the training set.
-        test_size: The number of samples in the test set.
-        ref_size: The number of reference posteriors.
-        n_per_ref: The number of samples per reference posteriors.
+    Parameters
+    ----------
+    name : str
+        A task name (e.g. `'two_moons'`).
+    train_size : int
+        The number of samples in the training set.
+    test_size : int
+        The number of samples in the test set.
+    ref_size : int, optional
+       The number of samples in the reference set, by default 0.
+    n_per_ref : int, optional
+        The number of samples per reference posteriors, by default 1024.
 
-    Returns:
+    Returns
+    -------
+    Dict
         A dictionary with training, test and reference sets as well as the parameters
         prior.
     """  # noqa:E501
-
     task = sbibm.get_task(name)
     prior = task.get_prior()
     simulator = task.get_simulator()

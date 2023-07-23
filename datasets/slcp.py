@@ -1,3 +1,5 @@
+r"""Dataset module for the SLCP dataset."""
+
 from benchopt import BaseDataset, safe_import_context
 from benchmark_utils.typing import Distribution, Tensor
 from typing import Dict
@@ -12,9 +14,14 @@ with safe_import_context() as import_ctx:
 
 
 class Dataset(BaseDataset):
-    """Simple likelihood complex posterior (SLCP) dataset."""
+    r"""Simple likelihood complex posterior (SLCP) dataset.
+
+    Custom implementation as used in https://github.com/francois-rozet/amnre.
+    """
 
     name = "slcp"
+    # parameters that can be called with `self.<>`,
+    # all possible combinations are used in the benchmark.
     parameters = {
         "train_size": [4096, 16384],
         "test_size": [256],
@@ -28,16 +35,22 @@ class Dataset(BaseDataset):
     ]
 
     def prior(self):
-        r"""p(theta)"""
-
+        r"""Define the prior :math:`p(\theta)`."""
         low = torch.full((5,), -3.0)
         high = torch.full((5,), 3.0)
 
         return Independent(Uniform(low, high), 1)
 
     def likelihood(self, theta: Tensor, eps: float = 1e-8) -> Distribution:
-        r"""p(x | theta)"""
+        r"""Define the simulator likelihood :math:`p(x | \theta)`.
 
+        Parameters
+        ----------
+        theta : Tensor
+            Parameters of the simulator.
+        eps : float
+            Small value to avoid zero covariance, defaults to 1e-8.
+        """
         # Mean
         mu = theta[..., :2]
 
@@ -66,11 +79,20 @@ class Dataset(BaseDataset):
         return Independent(normal, 1)
 
     def simulator(self, theta: Tensor) -> Tensor:
-        r"""x ~ p(x | theta)"""
+        r"""Simulate :math:`x ~ p(x | \theta)`.
 
+        Parameters
+        ----------
+        theta : Tensor
+            Parameters of the simulator for which to simulate data.
+        """
         return self.likelihood(theta).sample()
 
     def get_data(self) -> Dict:
+        r"""Generate data.
+
+        Return the input of the `Objective.set_data` method.
+        """
         with fork():
             torch.manual_seed(self.seed)
 
