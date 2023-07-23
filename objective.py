@@ -79,14 +79,15 @@ class Objective(BaseObjective):
             set of observations for which the reference posterior is known, by default None.
             of shape (n_ref, dim_x)
         """  # noqa: E501
-
         # Standardize data and prior
         mean_theta, std_theta = theta_train.mean(dim=0), theta_train.std(dim=0)
         mean_x, std_x = x_train.mean(dim=0), x_train.std(dim=0)
 
+        # Define standardization transform
         t_theta = AffineTransform(-mean_theta / std_theta, 1 / std_theta)
         t_x = AffineTransform(-mean_x / std_x, 1 / std_x)
 
+        # Standardize data
         self.theta_train = t_theta(theta_train)
         self.x_train = t_x(x_train)
         self.theta_test = t_theta(theta_test)
@@ -99,6 +100,7 @@ class Objective(BaseObjective):
             self.theta_ref = [t_theta(theta) for theta in theta_ref]
             self.x_ref = t_x(x_ref)
 
+        # Standardize prior
         self.prior = TransformedDistribution(prior, t_theta)
 
     def compute(

@@ -83,7 +83,7 @@ def c2st(
     theta_ref: List[Tensor],
     theta_est: List[Tensor],
     n_folds: int = 5,
-    z_score: bool = True,
+    z_score: bool = False,
 ) -> Tuple[float, float]:
     r"""Compute Classifier 2-Samples Test (C2ST) between reference (p) and estimator (q).
 
@@ -103,7 +103,8 @@ def c2st(
     n_folds : int, optional
         The number of cross-validation folds, by default 5.
     z_score : bool, optional
-        Whether to normalize the data before computing the C2ST, by default True.
+        Whether to normalize the data before computing the C2ST, by default False.
+        (data already normalized in Objective.set_data)
 
     Returns
     -------
