@@ -21,7 +21,7 @@ class Dataset(BaseDataset):
 
     name = "slcp"
     # parameters that can be called with `self.<>`,
-    # all possible combinations are used in the benchmark.
+    # all possible combinations are used in the benchmark
     parameters = {
         "train_size": [4096, 16384],
         "test_size": [256],

@@ -59,8 +59,8 @@ def data_generator_sbibm(
     Returns
     -------
     Dict
-        A dictionary with training, test and reference sets as well as the parameters
-        prior.
+        A dictionary with training, test and reference sets as well as
+        the parameters' prior.
     """  # noqa:E501
     task = sbibm.get_task(name)
     prior = task.get_prior()

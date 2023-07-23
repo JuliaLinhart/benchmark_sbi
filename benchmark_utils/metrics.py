@@ -148,7 +148,8 @@ def mmd(
         theta_est: List[Tensor]
             A list of estimated posterior samples.
         z_score: bool, optional
-            Whether to normalize the data before computing the MMD.
+            Whether to normalize the data before computing the MMD, by default False.
+            (data already normalized in Objective.set_data)
 
     Returns
     -------

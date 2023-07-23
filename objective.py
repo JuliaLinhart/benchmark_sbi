@@ -32,7 +32,7 @@ class Objective(BaseObjective):
     """  # noqa: E501
 
     name = "sbi: maximum likelihood on test set"
-    parameters = {}  # No parameters for this objective.
+    parameters = {}  # no parameters for this objective
     min_benchopt_version = "1.3"
 
     requirements = [
@@ -131,22 +131,22 @@ class Objective(BaseObjective):
                 - any other metric computed ...
 
         """  # noqa:E501
-        # Get result: `log_prob`` and `sample` functions from the solver.
+        # Get result: `log_prob`` and `sample` functions from the solver
         log_prob, sample = result
 
         # Compute NLL on train and test data.
-        # Always computed. Do not require samples from the reference posterior.
+        # Always computed. Do not require samples from the reference posterior
         nll_test = negative_log_lik(log_prob, self.theta_test, self.x_test)
         nll_train = negative_log_lik(log_prob, self.theta_train, self.x_train)
 
-        # Compute metrics on reference data if available.
+        # Compute metrics on reference data if available
         if self.theta_ref is None:
             c2st_mean, c2st_std = None, None
             emd_mean, emd_std = None, None
             mmd_mean, mmd_std = None, None
             sampling_time = None
         else:
-            # Sampling from the approximate posterior.
+            # Sampling from the approximate posterior
             start = time.perf_counter()
             # same sample size as for the reference posterior
             n_ref = (theta.shape[0] for theta in self.theta_ref)
@@ -154,7 +154,7 @@ class Objective(BaseObjective):
             theta_est = [sample(x, n) for x, n in zip(self.x_ref, n_ref)]
             end = time.perf_counter()
 
-            # Compute metrics.
+            # Compute metrics
             c2st_mean, c2st_std = c2st(self.theta_ref, theta_est)
             emd_mean, emd_std = emd(self.theta_ref, theta_est)
             mmd_mean, mmd_std = mmd(self.theta_ref, theta_est)

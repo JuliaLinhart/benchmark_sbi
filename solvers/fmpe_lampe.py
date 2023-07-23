@@ -36,7 +36,7 @@ class Solver(BaseSolver):
         patience=10, strategy="callback"
     )
     # parameters that can be called with `self.<>`,
-    # all possible combinations are used in the benchmark.
+    # all possible combinations are used in the benchmark
     parameters = {
         "layers": [3, 5],
     }
