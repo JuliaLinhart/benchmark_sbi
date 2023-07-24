@@ -32,9 +32,9 @@ class Solver(BaseSolver):
 
     name = "npe_lampe"
     # training is stopped when the objective on the callback
-    # does not decrease for over 10 iterations
+    # does not decrease for over `patience=3` iterations
     stopping_criterion = SufficientProgressCriterion(
-        patience=10, strategy="callback"
+        patience=3, strategy="callback"
     )
     # parameters that can be called with `self.<>`,
     # all possible combinations are used in the benchmark
@@ -57,24 +57,27 @@ class Solver(BaseSolver):
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
-        r"""Initialize the solver with the given `parameters`."""
+        r"""Set the data for the NPE."""
         self.theta, self.x = theta, x
 
+    def run(self, cb: Callable):
+        r"""Initialize and train the NPE."""
+        # Initialize the NPE with given `parameters`
         build = zuko.flows.MAF if self.flow == "maf" else zuko.flows.NSF
 
         self.npe = lampe.inference.NPE(
-            theta.shape[-1],
-            x.shape[-1],
+            self.theta.shape[-1],
+            self.x.shape[-1],
             build=build,
             transforms=self.transforms,
             hidden_features=(64, 64),
         )
 
+        # Initialize the loss and optimizer
         self.loss = lampe.inference.NPELoss(self.npe)
         self.optimizer = torch.optim.Adam(self.npe.parameters(), lr=1e-3)
 
-    def run(self, cb: Callable):
-        r"""Train the NPE for one iteration."""
+        # Define the training dataset
         dataset = lampe.data.JointDataset(
             self.theta,
             self.x,
@@ -82,6 +85,7 @@ class Solver(BaseSolver):
             shuffle=True,
         )
 
+        # Train the NPE
         while cb(self.get_result()):  # cb is a callback function
             for theta, x in dataset:
                 self.optimizer.zero_grad()

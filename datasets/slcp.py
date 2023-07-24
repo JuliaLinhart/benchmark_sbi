@@ -25,7 +25,7 @@ class Dataset(BaseDataset):
     parameters = {
         "train_size": [4096, 16384],
         "test_size": [256],
-        "ref_size": [16],
+        "ref_size": [0],
         "n_per_ref": [1024],
         "seed": [42],
     }
