@@ -30,9 +30,9 @@ class Solver(BaseSolver):
 
     name = "nre_lampe"
     # training is stopped when the objective on the callback
-    # does not decrease for over 10 iterations.
+    # does not decrease for over `patience=3` iterations
     stopping_criterion = SufficientProgressCriterion(
-        patience=10, strategy="callback"
+        patience=3, strategy="callback"
     )
     # parameters that can be called with `self.<>`,
     # all possible combinations are used in the benchmark
@@ -54,20 +54,23 @@ class Solver(BaseSolver):
         return n_iter + 10
 
     def set_objective(self, theta: Tensor, x: Tensor, prior: Distribution):
-        r"""Initialize the solver with the given `parameters`."""
+        r"""Set the data and prior for the NRE."""
         self.theta, self.x, self.prior = theta, x, prior
 
+    def run(self, cb: Callable):
+        r"""Initialize and train the NRE."""
+        # Initialize the NRE with given `parameters`
         self.nre = lampe.inference.NRE(
-            theta.shape[-1],
-            x.shape[-1],
+            self.theta.shape[-1],
+            self.x.shape[-1],
             hidden_features=(64,) * self.layers,
         )
 
+        # Initialize the loss and optimizer
         self.loss = lampe.inference.NRELoss(self.nre)
         self.optimizer = torch.optim.Adam(self.nre.parameters(), lr=1e-3)
 
-    def run(self, cb: Callable):
-        r"""Train the NRE for one iteration."""
+        # Define the training dataset
         dataset = lampe.data.JointDataset(
             self.theta,
             self.x,
@@ -75,6 +78,7 @@ class Solver(BaseSolver):
             shuffle=True,
         )
 
+        # Train the NRE
         while cb(self.get_result()):  # cb is a callback function
             for theta, x in dataset:
                 self.optimizer.zero_grad()

@@ -33,9 +33,9 @@ class Solver(BaseSolver):
 
     name = "npe_sbi"
     # training is stopped if the objective value does not decrease
-    # for more than 10 iterations, no callback available
+    # for more than `patience=3` iterations, no callback available
     stopping_criterion = SufficientProgressCriterion(
-        patience=10,
+        patience=3,
     )
     # parameters that can be called with `self.<>`,
     # all possible combinations are used in the benchmark
