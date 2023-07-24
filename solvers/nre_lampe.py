@@ -61,8 +61,8 @@ class Solver(BaseSolver):
         r"""Initialize and train the NRE."""
         # Initialize the NRE with given `parameters`
         self.nre = lampe.inference.NRE(
-            theta.shape[-1],
-            x.shape[-1],
+            self.theta.shape[-1],
+            self.x.shape[-1],
             hidden_features=(64,) * self.layers,
         )
 
