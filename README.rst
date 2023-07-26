@@ -39,7 +39,7 @@ Results are saved in the `outputs/` folder, with a `.html` file that offers a vi
 
 	$ benchopt run benchmark_sbi --n-repetitions 10 --max-runs 1000 --timemout 1000000000000000000
 
-where `max-runs` and `timeout` are given high values to avoid premature stopping of the algorithms without convergence. 
+where the parameters ``max-runs`` and `timeout`` are given high values to avoid premature stopping of the algorithms without convergence. 
 
 
 Contributing
