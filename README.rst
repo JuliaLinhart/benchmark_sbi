@@ -36,6 +36,7 @@ Results
 Results are saved in the `outputs/` folder, with a `.html` file that offers a visual interface showing convergence plots for the different datasets, solvers and metrics. They were obtained by running 
 
 .. code-block::
+
 	$ benchopt run benchmark_sbi --n-repetitions 10 --max-runs 1000 --timemout 1000000000000000000
 
 where `max-runs` and `timeout` are given high values to avoid premature stopping of the algorithms without convergence. 
